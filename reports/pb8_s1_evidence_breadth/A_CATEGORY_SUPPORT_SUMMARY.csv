@@ -1,9 +1,0 @@
-category,frozen_split,number_of_units,min_target_normal_n,median_target_normal_n,max_target_normal_n,unique_min_n,n_K4_eligible_units,n_K8_eligible_units,pct_K8_eligible,category_K8_eligible,K8_failure_reason
-can,DEV,5,12,12.0,12,12,0,0,0.0,False,excluded by frozen DEV/TEST split
-fabric,TEST,5,11,11.0,11,11,5,5,100.0,True,TEST-side and K8-eligible (n>=8)
-fruit_jelly,DEV,3,5,5.0,5,5,0,0,0.0,False,excluded by frozen DEV/TEST split
-rice,TEST,5,7,7.0,7,7,5,0,0.0,False,true target-normal shortage per acquisition domain (n=7 < 8)
-sheet_metal,TEST,5,4,4.0,4,4,5,0,0.0,False,true target-normal shortage per acquisition domain (n=4 < 8)
-vial,TEST,6,5,5.0,5,5,6,0,0.0,False,true target-normal shortage per acquisition domain (n=5 < 8)
-wallplugs,DEV,5,10,10.0,10,10,0,0,0.0,False,excluded by frozen DEV/TEST split
-walnuts,TEST,5,10,10.0,10,10,5,5,100.0,True,TEST-side and K8-eligible (n>=8)

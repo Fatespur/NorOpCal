@@ -1,9 +1,0 @@
-category,frozen_split,target_normal_count,target_normal_count_max,K4_support_available,K4_principal_test_eligible,K8_support_available,K8_eligible,FULL_n,number_conditions,number_detectors,reason_excluded_or_included
-can,DEV,12,12,True,False,True,False,12,5,3,excluded from principal evaluation by frozen DEV/TEST split
-fabric,TEST,11,11,True,True,True,True,11,5,3,included in frozen TEST K8 estimand
-fruit_jelly,DEV,5,5,True,False,False,False,5,3,3,excluded from principal evaluation by frozen DEV/TEST split
-rice,TEST,7,7,True,True,False,False,7,5,3,target-normal n=7 < 8
-sheet_metal,TEST,4,4,True,True,False,False,4,5,3,target-normal n=4 < 8
-vial,TEST,5,5,True,True,False,False,5,6,3,target-normal n=5 < 8
-wallplugs,DEV,10,10,True,False,True,False,10,5,3,excluded from principal evaluation by frozen DEV/TEST split
-walnuts,TEST,10,10,True,True,True,True,10,5,3,included in frozen TEST K8 estimand

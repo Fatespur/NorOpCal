@@ -1,3 +1,0 @@
-component,measurement_status,runtime_p50_ms_per_entity,runtime_p95_ms_per_entity,runtime_mean_ms_per_entity,additional_cpu_memory_bytes,additional_gpu_memory_bytes,target_normal_samples,cpu_only_feasible,retraining_required,gradient_required,target_anomaly_required,extra_model_parameters,storage_overhead_bytes,evidence
-Base DINOv2 Memory inference,NOT_VERIFIED_IN_PB8,,,,,,n/a,implementation-dependent,False,False,False,n/a,NOT_VERIFIED,Historical Phase-5 planning estimate is ~30 s per ~100-sample cell; no accepted per-image PB8 runtime artifact.
-PB7/PB8 threshold actuator incremental,VERIFIED_CPU_MICROBENCHMARK,0.1357,0.5352,0.196488962,3632,0,8,True,False,False,False,0,96,100000 loops over 10 DINOv2 K8-eligible entities; median/Q50 gate/scalar bounded update only.

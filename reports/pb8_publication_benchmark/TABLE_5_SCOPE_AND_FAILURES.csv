@@ -1,8 +1,0 @@
-limitation_id,scope,evidence,claim_constraint,status
-L1,Evidence breadth,Only fabric and walnuts satisfy the frozen TEST K=8 eligibility rule; 10 DINOv2 and 30 pooled units.,Do not claim broad industrial-category generalization.,LIMITED_BUT_REPORTABLE
-L2,Residual harm,All nine sealed harmful DINOv2 repeat-level cases are in walnuts; 89% have high source FNR.,Report localized residual risk; do not add a post-hoc walnuts rule.,R1_LOCALIZED_RESIDUAL_RISK
-L3,Detector transfer,WideResNet50-2 is actuator-mismatched and EfficientAD has no safe correctability headroom under the frozen rule.,"The positive claim is DINOv2-specific, not detector-agnostic.",DETECTOR_SPECIFIC
-L4,Support size,K=4 is unsafe and FULL is not monotonically safer than K=8 under the frozen policy.,Do not claim smaller or larger support sets are safe by monotonicity.,K8_ONLY
-L5,External comparator,No literature method matched the frozen deployment semantics without adding a new protocol choice.,"Report an audited absence of a fair direct comparator, not superiority over prior work.",NO_MATCHED_COMPARATOR
-L6,Compute,Threshold actuation overhead is measured on CPU; base DINOv2 per-image runtime is not verified in PB8.,Claim negligible actuator overhead only; do not claim end-to-end runtime superiority.,BASE_COST_NOT_VERIFIED
-L7,Capability,The method changes an operating threshold and does not change feature ranking.,Do not claim AUROC/AUPR or representation improvement.,OPERATING_POINT_ONLY

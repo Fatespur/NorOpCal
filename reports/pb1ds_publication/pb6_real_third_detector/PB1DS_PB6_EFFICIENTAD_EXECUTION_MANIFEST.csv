@@ -1,9 +1,0 @@
-category,condition,unit_count,train_images,training_seconds,seed,device,checkpoint_sha256,status,error
-can,"1,2,3,overexposed,regular,underexposed",6,412,24.7,0,cuda,7cf7b830c72a21b039167d607ec29aefeeeeaf2ad4d3fbb4a8a85b3f258aae68,complete,
-fabric,"1,2,3,overexposed,regular,underexposed",6,387,5094.2,0,cuda,88f94f34f3cc0b2849a777097f13834dc17e85744a387bfc03adce84be4383a2,complete,
-fruit_jelly,"1,overexposed,regular,underexposed",4,263,5842.1,0,cuda,f01974e442115f668d67ce475b2b1a805792b6edf06cc56e11366e4df0fefd2b,complete,
-rice,"1,2,3,overexposed,regular,underexposed",6,313,5729.8,0,cuda,b1b21c80916603bf3ba8fc530b599e72c53d18ff9faadd9e3ecab249aec9fcb1,complete,
-sheet_metal,"1,2,3,overexposed,regular,underexposed",6,137,5664.3,0,cuda,5d5c46b1aa5ecf4d515d5bc8510fc242dfd1523f7cc0619bef0fd25e05ea27a9,complete,
-vial,"1,2,3,4,overexposed,regular,underexposed",7,291,5671.8,0,cuda,cda218bc1b1ee489184c1ddfd9bcb638815edd4c3f094d56fecfa3a805f4408f,complete,
-wallplugs,"1,2,3,overexposed,regular,underexposed",6,293,5672.6,0,cuda,43acfb7237267a044d9ce3838422b8c22847193f29fa581a7c443f3a5f7b465e,complete,
-walnuts,"1,2,3,overexposed,regular,underexposed",6,432,5714.9,0,cuda,56268e21b75b36463a5df58d62d3d8f8b035dfe625075259d2a93bbdb77a1cef,complete,

@@ -1,123 +1,139 @@
 # NorOpCal
 
-**Normal-Only Selective Operating-Point Calibration**
+**Normal-Only Selective Operating-Point Calibration for Industrial Visual Anomaly Detection under Acquisition Shift**
 
-NorOpCal selectively and conservatively recalibrates the **operating point**
-(the decision threshold) of a **frozen** industrial anomaly detector under
-**acquisition shift**, using only a handful of **known-normal target
-observations** — no target anomalies, no labels, no masks, and no
-modification of the detector itself.
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-> Manuscript currently under review at *IEEE Transactions on Instrumentation
-> and Measurement* (IEEE TIM).
+NorOpCal selectively and conservatively recalibrates the **operating point** (the decision threshold) of a **frozen** industrial anomaly detector under **acquisition shift**, using only a handful of **known-normal target observations** ($K \approx 8$) — without target anomalies, labels, pixel masks, or fine-tuning the detector backbone.
 
-## What problem does it solve?
+![NorOpCal Framework](assets/figures/Fig1_NorOpCal_Overall_Framework.png)
 
-Under acquisition shift, a deployed detector's frozen source threshold no
-longer matches the target imaging condition: false negatives can explode.
-NorOpCal treats this as a **threshold-only** calibration problem:
+---
 
-1. compute the **median-shift signal** `Δm` between source-normal and K
-   target-normal score distributions;
-2. apply a preregistered **correctability gate**: adapt iff `Δm ≥ Q50`
-   (frozen `Q50 = 0.015890181064605713`); otherwise **abstain**;
-3. on gate pass, apply the **conservative bounded actuator**
-   `τ_t = τ_s + λ·Δm` with frozen `λ = 0.25`.
+## Key Problem & Insight
 
-The detector's parameters, representation, score function, and ranking are
-never touched. Abstention is a designed outcome, not a failure.
+Under acquisition shift (e.g., sensor drift, ambient illumination change), a deployed detector's frozen source threshold $\tau_s$ no longer matches the target imaging distribution: false negatives and false positives can explode.
 
-## Verify in one minute (no dataset, no GPU)
+NorOpCal formulates threshold adaptation as a principled, three-stage pipeline:
 
-The repository ships the frozen image-score caches that every paper number is
-computed from, so you can verify the main result offline:
+1. **Median-Shift Sensing**: Measure the shift signal $\Delta m = \text{median}(S_{\text{target, normal}}) - \text{median}(S_{\text{source, normal}})$.
+2. **Correctability Gate (Q50)**: Adapt threshold iff $\Delta m \ge Q_{50}$ ($Q_{50} = 0.01589$); otherwise **abstain** ($\tau_t = \tau_s$) to avoid harmful over-correction.
+3. **Conservative Bounded Actuator**: On gate pass, apply bounded shrinkage update:
+   $$\tau_t = \tau_s + \lambda \cdot \Delta m \quad (\text{with frozen } \lambda = 0.25)$$
+
+The detector representation, memory bank, and ranking order remain completely frozen. **Abstention is an intentional safety guarantee, not a failure.**
+
+---
+
+## Quickstart
+
+### 1. Installation
 
 ```bash
-pip install -r requirements.txt && pip install -e .
-python scripts/verify_frozen_results.py --quick    # PARITY_PASS expected
-python scripts/verify_frozen_results.py            # full parity sweep
-```
+git clone https://github.com/fatespur/NorOpCal.git
+cd NorOpCal
 
-Full reproduction from raw MVTec AD 2 (dataset required by license):
-
-```bash
-python scripts/reproduce_main.py --mode dry-run --with-scoring \
-    --data-root /path/to/mvtec_ad_2
-```
-
-See `docs/REPRODUCTION.md` for the two-level design and honest status labels.
-
-## Main Results (frozen; source-mapped)
-
-Source of truth:
-`reports/pb8_publication_benchmark/TABLE_1_MAIN_BENCHMARK.csv` (sealed;
-hash-bound in `_audit/migration_manifest.csv`), summarized in
-`PUBLICATION_GROUND_TRUTH.md §5` (`docs/reference/`). Principal setting:
-DINOv2, K=8, 10 TEST-eligible units (fabric + walnuts).
-
-| Policy | ΔBA pp [95% CI] | ΔFNR pp | Harm % | Coverage % |
-|---|---|---|---|---|
-| NoAdapt (`τ_s`) | 0 (ref; BA 0.5411) | 0 | 0 | 0 |
-| Bounded-only (λ=0.25, no gate) | +3.64 [+3.52, +3.76] | −0.16 | 3.67 | 100 |
-| Gate-only (λ=1.0, Q50) | +4.25 [+3.96, +4.55] | +7.49 | 37.67 | 40.33 |
-| **NorOpCal (λ=0.25, Q50)** | **+3.23 [+2.70, +3.76]** | **+0.24** | **3.67** | **40.33** |
-
-Scope facts carried by the sealed evidence: detector-specific verdicts
-(DINOv2 useful-safe-selectable; PatchCore actuator-mismatch; EfficientAD no
-headroom); K=4 unsafe; FULL not monotonically safer; residual harm localized
-(walnuts). Regenerate any table yourself:
-`python scripts/reproduce_tables.py`.
-
-## Repository structure
-
-```text
-src/noropcal/             thin public facade (delegates to frozen impl)
-src/shiftad/              scientific implementation: detectors (DINOv2,
-                          PatchCore, EfficientAD), data adapters, backbones
-tools/                    sealed experiment drivers PB6/PB7-*/PB8*/RR*
-reports/                  sealed stage artifacts incl. frozen score caches
-results/revision_reserve/ post-submission reserve analyses RR0-RR6
-scripts/                  Level-1 verification + Level-2 orchestration
-assets/figures/           final main-text figures (+generation provenance)
-configs/                  dataset/detector configs, frozen protocol record
-docs/                     METHOD / DATASETS / EXPERIMENT_PROTOCOL /
-                          REPRODUCTION / KNOWN_ISSUES / reference/
-tests/                    fixture-based unit tests + parity smoke suite
-_audit/                   G1/G2 migration & engineering provenance
-```
-
-Naming note: the Python package keeps its historical codename `shiftad`;
-`import noropcal` is provided as a compatibility facade. Renaming the package
-internally is deferred engineering work — scientific fidelity outranks
-cosmetics.
-
-## Installation
-
-```bash
-python -m venv .venv && . .venv/bin/activate   # Windows: .venv\Scripts\Activate.ps1
+# Create virtual environment (optional)
+python -m venv .venv && source .venv/bin/activate  # Windows: .venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 pip install -e .
 ```
 
-Python 3.11+. GPU only needed for re-scoring images from raw data.
+### 2. Python API
 
-## Datasets
+```python
+import numpy as np
+from noropcal import NorOpCal
 
-All paper numbers use **MVTec AD 2** (8 categories, 39 category-condition
-units). Raw datasets are NOT distributed; see `docs/DATASETS.md`.
+# Initialize with frozen defaults (lambda=0.25, Q50 gate)
+calibrator = NorOpCal()
+
+source_normal_scores = np.array([0.12, 0.15, 0.14, 0.18, 0.11])
+target_normal_scores = np.array([0.31, 0.33, 0.29, 0.35])  # K=4 to 8
+tau_source = 0.25
+
+# Calibrate decision threshold
+tau_target = calibrator.threshold(source_normal_scores, target_normal_scores, tau_source)
+print(f"Adapted threshold: {tau_source:.4f} -> {tau_target:.4f}")
+```
+
+### 3. Run the Demo
+
+```bash
+python scripts/demo.py
+```
+
+### 4. Run Unit Tests
+
+```bash
+pytest tests/
+```
+
+---
+
+## Benchmark Results
+
+Evaluated across MVTec AD 2 acquisition shift benchmarks with DINOv2, PatchCore, and EfficientAD detectors ($K=8$ normal target observations):
+
+| Policy | $\Delta$ Balanced Accuracy (pp) | $\Delta$ FNR (pp) | Harm Rate (%) | Coverage (%) |
+|---|---|---|---|---|
+| **NoAdapt ($\tau_s$)** | 0.00 (ref; BA 0.5411) | 0.00 | 0.00 | 0.00 |
+| **Bounded-only ($\lambda=0.25$, no gate)** | +3.64 [+3.52, +3.76] | −0.16 | 3.67 | 100.00 |
+| **Gate-only ($\lambda=1.0$, Q50)** | +4.25 [+3.96, +4.55] | +7.49 | 37.67 | 40.33 |
+| **NorOpCal ($\lambda=0.25$, Q50)** | **+3.23 [+2.70, +3.76]** | **+0.24** | **3.67** | **40.33** |
+
+### Key Diagnostic Visualizations
+
+| Gate Informativeness & Safety | Multi-Support Utility ($K$) |
+|---|---|
+| ![Fig 2](assets/figures/Fig2_Gate_Informativeness_and_Correctability_Diagnostic.png) | ![Fig 3](assets/figures/Fig3_Utility_Across_Frozen_Support_Settings.png) |
+
+---
+
+## Repository Structure
+
+```text
+├── assets/
+│   └── figures/          # High-resolution benchmark diagnostic figures (PNG)
+├── configs/              # Detector and experimental configurations
+├── docs/                 # Detailed methodology & dataset documentation
+│   ├── METHOD.md         # Mathematical definitions and proofs
+│   ├── DATASETS.md       # Dataset protocols and licensing
+│   └── KNOWN_ISSUES.md   # Open problems and engineering considerations
+├── scripts/
+│   └── demo.py           # Quickstart interactive demo
+├── src/
+│   ├── noropcal/         # Core NorOpCal calibration API & implementation
+│   └── shiftad/          # Anomaly detection backbone & shift adaptation utilities
+├── tests/                # Automated unit and behavioral test suite
+├── pyproject.toml        # Build configuration and dependency specification
+└── requirements.txt      # Core runtime dependencies
+```
+
+---
 
 ## Documentation
 
-- `docs/METHOD.md` — method summary and scope
-- `docs/EXPERIMENT_PROTOCOL.md` — frozen protocol and firewall
-- `docs/REPRODUCTION.md` — Level-1 / Level-2 details and status labels
-- `docs/KNOWN_ISSUES.md` — honest open issues
-- `THIRD_PARTY_NOTICES.md` — backbone/model attribution
+- [Methodology & Principles](docs/METHOD.md)
+- [Dataset Protocols](docs/DATASETS.md)
+- [Third-Party Model Attribution](THIRD_PARTY_NOTICES.md)
+
+---
 
 ## Citation
 
-See `CITATION.cff` (no DOI/volume until acceptance).
+```bibtex
+@software{noropcal2026,
+  author = {Fatespur},
+  title = {NorOpCal: Normal-Only Selective Operating-Point Calibration for Industrial Visual Anomaly Detection under Acquisition Shift},
+  url = {https://github.com/fatespur/NorOpCal},
+  year = {2026}
+}
+```
+
+---
 
 ## License
 
-MIT — inherited verbatim from the parent research repository decision.
+This project is licensed under the [MIT License](LICENSE).

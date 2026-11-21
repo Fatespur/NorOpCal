@@ -1,9 +1,0 @@
-Category,Original target-normal support (per acquisition-domain n),Original K8 eligible,Supplementary K8 eligible,Pooling rationale,DINOv2 ΔBA,ΔFNR,Safety,Reason if not eligible
-fabric,11,yes,no (no supplementary pool; already original K8),N/A (already original K8; no supplementary protocol needed),PB8 principal (pooled fabric+walnuts ΔBA=+3.23pp),PB8 principal (pooled mean ΔFNR=+0.24pp),pass (PB8 sealed),Original K8-eligible category; preserved unchanged
-walnuts,10,yes,no (no supplementary pool; already original K8),N/A (already original K8; no supplementary protocol needed),PB8 principal (pooled fabric+walnuts ΔBA=+3.23pp),PB8 principal (pooled mean ΔFNR=+0.24pp),pass (PB8 sealed),Original K8-eligible category; preserved unchanged
-rice,7,no,no,None legal (cross-condition pooling mixes distinct acquisition regimes; source-filling forbidden; private mixes unlabeled; n<8 relabel forbidden),NA,NA,NA,R1 TRUE_DATA_SHORTAGE per acquisition domain (n=7<8); no legal supplementary K8 pool
-sheet_metal,4,no,no,None legal (same as above),NA,NA,NA,R1 TRUE_DATA_SHORTAGE per acquisition domain (n=4<8); no legal supplementary K8 pool
-vial,5,no,no,None legal (same as above),NA,NA,NA,R1 TRUE_DATA_SHORTAGE per acquisition domain (n=5<8); no legal supplementary K8 pool
-can,12,no (DEV-split),no,None (sufficient per-domain n but frozen DEV/TEST split excludes from evaluation),NA,NA,NA,Excluded by frozen DEV/TEST split (DEV side), not a K8-evaluation candidate under frozen protocol
-fruit_jelly,5,no (DEV-split),no,None (per-domain n<8 AND DEV-split excluded),NA,NA,NA,Excluded by frozen DEV/TEST split (DEV side); per-domain n=5<8 anyway
-wallplugs,10,no (DEV-split),no,None (sufficient per-domain n but frozen DEV/TEST split excludes from evaluation),NA,NA,NA,Excluded by frozen DEV/TEST split (DEV side), not a K8-evaluation candidate under frozen protocol

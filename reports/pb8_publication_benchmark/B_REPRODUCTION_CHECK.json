@@ -1,7 +1,0 @@
-{
-  "n_entities": 78,
-  "max_abs_diff_delta_ba": 9.020562075079397e-17,
-  "max_abs_diff_delta_fnr": 8.673617379884035e-17,
-  "max_abs_diff_harm": 5.551115123125783e-17,
-  "reproduction_ok": true
-}
