@@ -21,6 +21,12 @@ jobs:
           python-version: "3.11"
           cache: pip
 
+      - name: Install system CJK fonts
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fonts-noto-cjk fonts-wqy-microhei
+          fc-cache -fv
+
       - name: Install dependencies (CPU PyTorch + Dev)
         run: |
           python -m pip install --upgrade pip
@@ -32,7 +38,7 @@ jobs:
         run: |
           python -c "from noropcal import load_frozen_spec; spec = load_frozen_spec()['principal_candidate']; assert spec['lambda'] == 0.25; assert abs(spec['cutoff_value'] - 0.01589018) < 1e-6; print('Frozen spec verified successfully.')"
 
-      - name: Run core unit tests
+      - name: Run core unit tests (Calibration API & Logic only)
         env:
           PYTHONPATH: ${{ github.workspace }}/src
         run: |
@@ -44,6 +50,6 @@ jobs:
         run: |
           python scripts/demo.py
 
-      - name: Verify diagnostic figure generation
+      - name: Verify diagnostic figure generation & font rendering
         run: |
           python assets/figures/generate_all_figures.py

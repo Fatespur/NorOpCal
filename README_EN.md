@@ -85,11 +85,12 @@ print(f"Adapted threshold: {tau_source:.4f} -> {tau_target:.4f}")
 python scripts/demo.py
 ```
 
-### 4. Run Unit Tests
+### 4. Run Unit Tests (API & Logic Level)
 
 ```bash
 python -m pytest -v tests/
 ```
+*Note: The 6 automated unit tests strictly verify core calibration APIs, input validation, quantile gating logic, and bounded translation actuators. They do not cover or represent full baseline detector feature inference (DINOv2, PatchCore, EfficientAD) or paper Level 3 industrial benchmark replication.*
 
 ---
 

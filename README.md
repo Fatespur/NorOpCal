@@ -93,11 +93,12 @@ print(f"自适应决策阈值校准结果: {tau_source:.4f} -> {tau_target:.4f}"
 python scripts/demo.py
 ```
 
-### 4. 自动化单元测试
+### 4. 自动化单元测试 (API 与逻辑层级)
 
 ```bash
 python -m pytest -v tests/
 ```
+*注：现有 6 项自动化单元测试严格验证核心校准 API、输入契约校验、分位数门控逻辑与有界平移执行器，不包含也不代表 DINOv2、PatchCore、EfficientAD 完整基线模型的特征抽取与论文 Level 3 工业实验全量复现。*
 
 ---
 

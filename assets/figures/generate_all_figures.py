@@ -4,19 +4,28 @@ Generates core publication-grade and diagnostic figures:
 - Fig1_系统框架图.png (Framework diagram)
 - Fig2_帕累托风险增益前沿.png (Authentic continuous-scale ablation trade-off on DINOv2)
 - Fig3_样本效率与骨干迁移性.png (Conceptual SE decay & detector feasibility classification)
-- Fig4_安全门控消融与危害率压制.png (Ablation with authentic 4-policy evidence)
+- Fig4_安全门控消融与危害率压制.png (Controlled mechanism attribution between Bounding and Gating)
 - Fig5_决策边界与工况漂移对比.png (Strict mathematically consistent synthetic schematic)
-- Fig6_工业品类全景雷达图.png (Conceptual radar template for multi-condition evaluation)
+
+Note on Fig 6: Radar chart has been deprecated and removed to prevent misleading impressions,
+as multi-category performance is not supported by empirical radar evaluation.
 """
 
 import os
+import warnings
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import numpy as np
 
-# Global style and font setup
+# Strict check: Treat any missing glyph warnings as errors to prevent unreadable box characters
+warnings.filterwarnings("error", message=r".*Glyph.*missing from font.*")
+
+# Global style and font setup with prioritized CJK fonts across Linux and Windows
 plt.style.use('default')
-plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei', 'DejaVu Sans']
+plt.rcParams['font.sans-serif'] = [
+    'Noto Sans CJK SC', 'Source Han Sans SC', 'WenQuanYi Micro Hei',
+    'SimHei', 'Microsoft YaHei', 'DejaVu Sans'
+]
 plt.rcParams['axes.unicode_minus'] = False
 
 OUTPUT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -133,14 +142,11 @@ def generate_fig3():
         rect = patches.FancyBboxPatch((0.2, y_top - card_h), 9.6, card_h,
                                       boxstyle="round,pad=0.15", ec=c["border"], fc=c["bg"], lw=1.5)
         ax2.add_patch(rect)
-        # Header text
         ax2.text(0.5, y_top - 0.55, f"{c['detector']}  |  {c['role']}", fontsize=9.8, fontweight='bold', color="#0F172A")
-        # Badge
         badge = patches.FancyBboxPatch((6.6, y_top - 0.75), 3.0, 0.55,
                                        boxstyle="round,pad=0.08", ec="none", fc=c["badge_bg"])
         ax2.add_patch(badge)
         ax2.text(8.1, y_top - 0.48, c["verdict"], fontsize=8.2, fontweight='bold', color="#FFFFFF", ha="center", va="center")
-        # Description
         ax2.text(0.5, y_top - 1.25, c["desc"], fontsize=8.3, color="#334155", va="top", linespacing=1.35)
 
     out = os.path.join(OUTPUT_DIR, "Fig3_样本效率与骨干迁移性.png")
@@ -150,15 +156,17 @@ def generate_fig3():
     print("Fig 3 generated:", out)
 
 def generate_fig4():
-    """Generates Fig 4 with authentic frozen 4-policy data, separating bounding from gating."""
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(13, 5.5), facecolor='white', dpi=300)
+    """Generates Fig 4 with controlled mechanism attribution:
+    1. Bounding effect: Compare 'Gate-only λ=1.0' vs 'Full policy λ=0.25' (same gate Q50).
+    2. Gating effect: Compare 'Bounded-only λ=0.25' vs 'Full policy λ=0.25' (same bounding λ=0.25).
+    """
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(13.2, 5.8), facecolor='white', dpi=300)
     
-    # 4 Authentic frozen policies from preregistered ablation
     stages = [
-        '不校准基线\n(NoAdapt)',
-        '仅门控机制\n(λ=1.0, 激进更新)',
-        '仅有界收缩\n(λ=0.25, 无门控)',
-        'NorOpCal全策略\n(门控 + 有界收缩)'
+        '① 不校准基线\n(NoAdapt)',
+        '② 仅门控机制\n(λ=1.0, 激进更新)',
+        '③ 仅有界收缩\n(λ=0.25, 无门控)',
+        '④ 完整 NorOpCal\n(门控 + 有界收缩)'
     ]
     ba_gains = [0.0, 4.25, 3.64, 3.23]
     harm_rates = [0.0, 37.67, 3.67, 3.67]
@@ -173,19 +181,35 @@ def generate_fig4():
                  ha='center', va='bottom', fontsize=9.2, fontweight='bold', color='#1E293B')
     ax1.set_ylabel("平衡准确率净增益 (ΔBA, pp)", fontsize=10.5, fontweight='bold')
     ax1.set_title("策略消融：检出增益分析\n(DINOv2, K=8, 10 TEST 单元冻结实测)", fontsize=11.5, fontweight='bold', pad=12)
-    ax1.set_ylim(0, 5.0)
+    ax1.set_ylim(0, 5.2)
     ax1.grid(True, linestyle='--', alpha=0.35, axis='y')
 
-    # Subplot 2: Harm Rate & Mechanism separation
+    # Subplot 2: Controlled Mechanism Attribution
     colors2 = ['#64748B', '#DC2626', '#0284C7', '#059669']
     bars2 = ax2.bar(stages, harm_rates, color=colors2, width=0.55)
     for b, cov in zip(bars2, coverages):
         h = b.get_height()
         ax2.text(b.get_x() + b.get_width()/2, h + 1.1, f"{h:.2f}%\n(覆盖率{cov:.1f}%)",
                  ha='center', va='bottom', fontsize=8.5, fontweight='bold', color='#1E293B')
+
+    # Explicit attribution annotations
+    # 1. Bounding effect: ② vs ④ (control: same Q50 gate)
+    ax2.annotate("有界收缩控危害 (② vs ④，同门控):\nλ 从 1.0 降为 0.25 -> 危害率由 37.67% 骤降至 3.67%",
+                 xy=(1.0, 38.0), xytext=(0.4, 43.5),
+                 arrowprops=dict(arrowstyle="->", color='#DC2626', lw=1.5),
+                 fontsize=8.5, fontweight='bold', color='#991B1B',
+                 bbox=dict(boxstyle="round,pad=0.3", fc="#FEF2F2", ec="#FECDD3", lw=1.0))
+    
+    # 2. Gating effect: ③ vs ④ (control: same λ=0.25 bounding)
+    ax2.annotate("门控机制施选择 (③ vs ④，同收缩):\n收缩同为 λ=0.25，Harm 均为 3.67% -> 门控使覆盖率由 100% 优化为 40.3%",
+                 xy=(3.0, 6.0), xytext=(1.2, 17.0),
+                 arrowprops=dict(arrowstyle="->", color='#059669', lw=1.5),
+                 fontsize=8.5, fontweight='bold', color='#065F46',
+                 bbox=dict(boxstyle="round,pad=0.3", fc="#ECFDF5", ec="#A7F3D0", lw=1.0))
+
     ax2.set_ylabel("决策危害率 (Harm Rate, %)", fontsize=10.5, fontweight='bold')
-    ax2.set_title("机制归因：有界收缩控危害，门控机制施选择\n(有界收缩将危害由37.67%降至3.67%；门控维持40.3%选择性覆盖)", fontsize=11.0, fontweight='bold', pad=12)
-    ax2.set_ylim(0, 48)
+    ax2.set_title("机制归因：严格单一变量对照分析\n[收缩作用(② vs ④): 压降危害率；门控作用(③ vs ④): 赋予选择性]", fontsize=11.0, fontweight='bold', pad=12)
+    ax2.set_ylim(0, 50)
     ax2.grid(True, linestyle='--', alpha=0.35, axis='y')
 
     out = os.path.join(OUTPUT_DIR, "Fig4_安全门控消融与危害率压制.png")
@@ -202,16 +226,11 @@ def generate_fig5():
     # 1. Deterministic synthetic data generation
     np.random.seed(42)
     src_normals = np.random.normal(loc=0.25, scale=0.06, size=500)
-    # Target shift under acquisition shift
-    tgt_all_normals = np.random.normal(loc=0.42, scale=0.06, size=500)
     tgt_k8 = np.random.normal(loc=0.42, scale=0.06, size=8)
-    defect_scores = np.random.normal(loc=0.72, scale=0.08, size=300)
 
     # 2. Strict Mathematical Calculations according to NorOpCal equations
     m_s = float(np.median(src_normals))
-    # Source threshold calibrated at source quantile 95%
     tau_s = float(np.percentile(src_normals, 95.0))
-    
     m_t = float(np.median(tgt_k8))
     delta_m = float(m_t - m_s)
     cutoff_q50 = 0.015890181064605713
@@ -220,19 +239,18 @@ def generate_fig5():
     tau_t = float(tau_s + lam * delta_m) if gate_pass else float(tau_s)
 
     x = np.linspace(0, 1.0, 600)
-    # Gaussian analytical density approximations for visualization
     src_pdf = 1.0 / (0.06 * np.sqrt(2 * np.pi)) * np.exp(-0.5 * ((x - 0.25) / 0.06)**2)
     tgt_pdf = 1.0 / (0.06 * np.sqrt(2 * np.pi)) * np.exp(-0.5 * ((x - 0.42) / 0.06)**2)
     defect_pdf = 1.0 / (0.08 * np.sqrt(2 * np.pi)) * np.exp(-0.5 * ((x - 0.72) / 0.08)**2)
 
-    # Subplot 1: Before (Fixed Static Threshold)
+    # Subplot 1: Before
     ax1.set_facecolor('#FFFFFF')
     ax1.set_xlim(0, 1.0)
     ax1.set_ylim(0, 8.0)
     ax1.grid(True, linestyle='--', alpha=0.35, color='#CBD5E1')
 
     ax1.plot(x, src_pdf, color='#94A3B8', linestyle='--', lw=2.0, label=f"源域正常得分分布 (标定中位数 m_s={m_s:.4f})")
-    ax1.plot(x, tgt_pdf, color='#EA580C', lw=2.5, label=f"目标域正常得分分布 (漂移工况)")
+    ax1.plot(x, tgt_pdf, color='#EA580C', lw=2.5, label="目标域正常得分分布 (漂移工况)")
     ax1.plot(x, defect_pdf, color='#DC2626', lw=2.2, label="缺陷/异常样本得分分布")
 
     ax1.vlines(x=tau_s, ymin=0, ymax=5.5, color='#0F172A', lw=2.2, linestyle='-', zorder=4)
@@ -253,7 +271,7 @@ def generate_fig5():
                   fontsize=11.8, fontweight='bold', color='#991B1B', pad=12)
     ax1.legend(loc='upper right', frameon=True, facecolor='#FFFFFF', edgecolor='#CBD5E1', fontsize=8.8)
 
-    # Subplot 2: After (Strictly Consistent NorOpCal Calibration)
+    # Subplot 2: After
     ax2.set_facecolor('#FFFFFF')
     ax2.set_xlim(0, 1.0)
     ax2.set_ylim(0, 8.0)
@@ -264,15 +282,12 @@ def generate_fig5():
     ax2.plot(x, defect_pdf, color='#DC2626', lw=2.2, label="缺陷/异常样本分布")
     ax2.fill_between(x, 0, defect_pdf, color='#FEF2F2', alpha=0.35)
 
-    # Scatter K=8 observations
     ax2.scatter(tgt_k8, np.full_like(tgt_k8, 0.25), color='#F59E0B', s=70, marker='o', 
                 edgecolor='#78350F', lw=1.4, zorder=6, label=f"目标域正常参考样本 (K=8, 样本中位数 m_t={m_t:.4f})")
 
-    # Static tau_s
     ax2.vlines(x=tau_s, ymin=0, ymax=4.5, color='#94A3B8', lw=1.8, linestyle=':', zorder=4)
     ax2.text(tau_s, 4.8, f"原静态阈值 τ_s = {tau_s:.4f}", fontsize=8.5, color='#64748B', ha='center', va='bottom')
 
-    # Calibrated tau_t
     ax2.vlines(x=tau_t, ymin=0, ymax=5.5, color='#059669', lw=2.6, linestyle='-', zorder=4)
     ax2.text(tau_t, 6.5, f"NorOpCal 自适应校准阈值 τ_t = {tau_t:.4f}\n[Δm={delta_m:.4f} ≥ Q50({cutoff_q50:.4f}) -> 触发校准]\n[严格数学生成: τ_t = τ_s + 0.25·Δm]", 
              fontsize=9.2, fontweight='bold', color='#065F46', ha='center', va='center',
@@ -302,61 +317,9 @@ def generate_fig5():
     plt.close()
     print("Fig 5 generated:", out)
 
-def generate_fig6():
-    """Conceptual radar template for multi-condition evaluation."""
-    categories = [
-        '工况单元 1', '工况单元 2', '工况单元 3', '工况单元 4',
-        '工况单元 5', '工况单元 6', '工况单元 7', '工况单元 8'
-    ]
-    num_vars = len(categories)
-
-    # Reference template values
-    base_scores = [50.0] * num_vars
-    noropcal_scores = [53.0] * num_vars
-
-    angles = np.linspace(0, 2 * np.pi, num_vars, endpoint=False).tolist()
-    base_scores_plot = base_scores + base_scores[:1]
-    noropcal_scores_plot = noropcal_scores + noropcal_scores[:1]
-    angles_plot = angles + angles[:1]
-
-    fig, ax = plt.subplots(figsize=(9.0, 9.0), subplot_kw=dict(polar=True), dpi=300)
-    fig.patch.set_facecolor('#FFFFFF')
-    ax.set_facecolor('#FAFAFA')
-
-    ax.set_theta_offset(np.pi / 2)
-    ax.set_theta_direction(-1)
-    ax.set_ylim(35, 70)
-    ax.set_rgrids([40, 45, 50, 55, 60, 65], labels=["40%", "45%", "50%", "55%", "60%", "65%"], 
-                  angle=22, fontsize=8.5, color="#64748B", zorder=3)
-
-    ax.spines['polar'].set_color('#64748B')
-    ax.spines['polar'].set_linewidth(1.3)
-    ax.spines['polar'].set_linestyle('-')
-
-    ax.plot(angles_plot, base_scores_plot, color='#94A3B8', linewidth=2.0, linestyle='--', label='基准操作点 (未校准)')
-    ax.fill(angles_plot, base_scores_plot, color='#94A3B8', alpha=0.18)
-
-    ax.plot(angles_plot, noropcal_scores_plot, color='#059669', linewidth=2.8, linestyle='-', label='自适应校准 (模板示意)')
-    ax.fill(angles_plot, noropcal_scores_plot, color='#10B981', alpha=0.30)
-
-    ax.set_xticks(angles)
-    ax.set_xticklabels(categories, fontsize=10.0, fontweight='bold', color="#0F172A")
-    ax.tick_params(axis='x', pad=28)
-
-    ax.set_title("【概念雷达示意模版·非真实实验数据】多工况单元适应性评估格式模版\n[声明：本图为多工况评估排版示意模版，不代表任何品类实测性能数值]", 
-                 fontsize=11.5, fontweight='bold', color='#0F172A', pad=38)
-    ax.legend(loc='lower right', bbox_to_anchor=(1.15, -0.05), frameon=True, 
-              facecolor='#FFFFFF', edgecolor='#CBD5E1', fontsize=9.0)
-
-    out = os.path.join(OUTPUT_DIR, "Fig6_工业品类全景雷达图.png")
-    plt.savefig(out, dpi=300, facecolor='#FFFFFF', bbox_inches='tight')
-    plt.close()
-    print("Fig 6 generated:", out)
-
 if __name__ == "__main__":
     generate_fig2()
     generate_fig3()
     generate_fig4()
     generate_fig5()
-    generate_fig6()
-    print("All figures successfully regenerated under strict mathematical and scientific guidelines!")
+    print("All authentic and diagnostic figures generated successfully without glyph errors!")
