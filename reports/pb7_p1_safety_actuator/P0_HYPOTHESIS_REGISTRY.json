@@ -1,0 +1,26 @@
+{
+  "H1_BOUNDED_CORRECTION_RETAINS_UTILITY": {
+    "claim": "limiting actuator correction magnitude retains substantial positive delta_BA",
+    "stage": "D/E"
+  },
+  "H2_SAFETY_IMPROVES_MONOTONICALLY_WITH_CONSERVATISM": {
+    "claim": "as lambda decreases, delta_FNR and harm rate decrease monotonically",
+    "stage": "F"
+  },
+  "H3_ABSTENTION_ADDS_SAFETY_VALUE": {
+    "claim": "correctability gate + bounded actuator reduces mean delta_FNR and harmful-unit rate vs Always-On bounded, retaining utility",
+    "stage": "E"
+  },
+  "H4_K8_SUFFICIENT": {
+    "claim": "the main safety-utility tradeoff is preserved at K=8",
+    "stage": "E"
+  },
+  "H5_SAFE_DEPLOYABLE_OPERATING_POINT_EXISTS": {
+    "claim": "at least one preregistered candidate satisfies delta_FNR <= +0.02 and delta_BA > 0 with CI supporting nonzero benefit under strict OOF / held-out evaluation",
+    "stage": "E"
+  },
+  "H6_DETECTOR_DEPENDENT": {
+    "claim": "DINOv2 is the main beneficiary; PatchCore/EfficientAD may abstain or have near-zero coverage without forced adaptation",
+    "stage": "E/F"
+  }
+}

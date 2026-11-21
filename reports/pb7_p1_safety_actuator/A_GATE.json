@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "stage": "PB7_P1_SAFETY_CONSTRAINED_ACTUATOR_DEVELOPMENT",
+  "phase": "A",
+  "timestamp": "2026-08-20T01:06:27Z",
+  "checks": {
+    "n_families_le_3": true,
+    "A_T2_RAW_matches_PB7P0_T2": true,
+    "A_TAIL_RAW_matches_PB7P0_T3": true,
+    "A_MEDIAN_RAW_has_no_scale_tail_term": true,
+    "no_anomaly_derived_parameter": true,
+    "no_outcome_driven_addition": true
+  },
+  "detail": {
+    "max_abs_diff_A_T2_RAW_vs_T2": 2.220446049250313e-16,
+    "max_abs_diff_A_TAIL_RAW_vs_T3": 2.220446049250313e-16,
+    "n_entities_checked": 117
+  },
+  "verdict": "PASS",
+  "terminal": "PROCEED_TO_B"
+}

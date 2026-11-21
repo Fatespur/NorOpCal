@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.0",
+  "stage": "PB7_P2_PUBLICATION_READINESS_CONFIRMATORY_VALIDATION",
+  "phase": "E",
+  "timestamp": "2026-08-20T01:36:33Z",
+  "n_entities": 78,
+  "n_harm": 9,
+  "harm_rate": 0.11538461538461539,
+  "n_catastrophic": 9,
+  "concentration": {
+    "harm_categories": [
+      "walnuts"
+    ],
+    "top_category_share": 1.0,
+    "single_category_concentration": true,
+    "high_source_fnr_share": 0.8888888888888888,
+    "high_source_fnr_concentration": false,
+    "detector_wide_failure": false,
+    "condition_systemic_failure": false,
+    "dinov2_harm_rate": 0.038461538461538464,
+    "dinov2_n_harm": 1
+  },
+  "verdict": "R1_LOCALIZED_RESIDUAL_RISK",
+  "claim_consequence": "LOCALIZED_RESIDUAL_RISK: the method may be retained and the limitation written into the paper."
+}

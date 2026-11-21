@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0",
+  "phase": "C",
+  "timestamp": "2026-08-20T02:38:39Z",
+  "checks": {
+    "component_2x2_complete": true,
+    "full_method_dino_safe": true,
+    "raw_dino_safety_fail": true,
+    "gate_only_dino_safety_fail": true,
+    "bounded_only_dino_safe": true,
+    "shrinkage_safety_monotonic_with_lambda": true,
+    "random_seeds_complete": true,
+    "random_control_outcome_free": true
+  },
+  "random_control_summary": {
+    "mean_delta_ba": 0.014712797979797982,
+    "ci_lo_delta_ba": 0.01237348484848485,
+    "ci_hi_delta_ba": 0.016990151515151517,
+    "mean_delta_fnr": -0.000594444444444447,
+    "mean_harm_rate": 0.014913333333333332,
+    "mean_coverage": 0.4033333333333334,
+    "interval_semantics": "2.5/97.5 percentiles over 1000 preregistered random-control seeds"
+  },
+  "verdict": "PASS",
+  "terminal": "PROCEED_TO_D"
+}

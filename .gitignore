@@ -1,0 +1,131 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Environments
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Datasets (raw datasets must never enter the repository)
+data/
+datasets/
+
+# Models / weights
+checkpoints/
+weights/
+*.pth
+*.pt
+*.ckpt
+
+# Caches and bulk artifacts (the frozen score caches under
+# reports/p0_dataset_opportunity/_cache/scores/ are intentionally tracked;
+# see _audit/large_files.csv for the documented exception)
+outputs/
+runs/
+logs/
+features/
+feature_bank/
+memory_bank/
+
+# Temporary
+tmp/
+temp/
+*.bak
+
+# Secrets
+.env
+.env.*
+
+# Packaging
+build/
+dist/
+*.egg-info/
+
+# --- G3 Git tracking boundary -------------------------------------------
+# Principle: STAGING PRESERVES EVIDENCE; GIT PRESERVES RELEASE-WORTHY HISTORY.
+
+# Frozen binary score caches stay physically in staging for fast offline
+# verification during review, but are excluded from Git history.
+# Their authoritative trackable manifest is artifacts/frozen_scores_manifest.csv
+reports/p0_dataset_opportunity/_cache/scores/*.npz
+
+# Private revision-reserve evidence (RR0-RR6), incl. the RR6 negative
+# comparator result: preserved locally, verbatim, outside Git history.
+results/revision_reserve/
+tools/revision_reserve/
+
+# _audit/: local operational/private evidence stays out of history; the
+# public-provenance subset is re-included explicitly (mirrors
+# _audit/G2_audit_publication_policy.csv). Nothing under _audit is deleted.
+/_audit/*
+!/_audit/G1_REPORT.md
+!/_audit/G2_REPORT.md
+!/_audit/migration_manifest.csv
+!/_audit/source_inventory.csv
+!/_audit/manual_review.csv
+!/_audit/large_files.csv
+!/_audit/path_injection_diffs.patch
+!/_audit/repository_tree.txt
+!/_audit/classify_summary.json
+!/_audit/G2_manual_review_resolution.csv
+!/_audit/G2_repository_change_manifest.csv
+!/_audit/G2_test_report.txt
+!/_audit/G2_environment_freeze.txt
+!/_audit/G2_repository_tree.txt
+!/_audit/G2_audit_publication_policy.csv
+!/_audit/G2_code_changes/
+
+# --- G3.5 public-branch privacy boundary -----------------------------------------
+# Local sealed/private files removed from the PUBLIC TREE on this branch.
+# Physical copies remain in staging; originals are immutable sealed
+# evidence or internal audit records. See _audit/G35_sanitization_manifest.csv
+# (kept locally). Main-branch tracking is unchanged.
+reports/pb1ds_publication/pb6_real_third_detector/PB1DS_PB6_D1_ASSET_BINDING_AMENDMENT.md
+reports/pb1ds_publication/pb6_real_third_detector/PB1DS_PB6_D1_D8_FULL_REPORT.md
+reports/pb1ds_publication/pb6_real_third_detector/PB1DS_PB6_D2_ASSET_RESOLUTION.csv
+reports/pb1ds_publication/pb6_real_third_detector/PB1DS_PB6_D2_DATASET_AUDIT.md
+reports/pb1ds_publication/pb6_real_third_detector/PB1DS_PB6_D2_READY_POLL_latest.json
+reports/pb1ds_publication/pb6_real_third_detector/PB1DS_PB6_EFFICIENTAD_BINDING.json
+reports/pb1ds_publication/pb6_real_third_detector/PB1DS_PB6_EFFICIENTAD_WEIGHT_PROVENANCE.json
+reports/pb1ds_publication/pb6_real_third_detector/PB1DS_PB6_FINAL_REPORT.md
+reports/pb1ds_publication/pb6_real_third_detector/PB1DS_PB6_HARD_STOP_EVIDENCE.md
+reports/pb1ds_publication/pb6_real_third_detector/PB1DS_PB6_POST_D2_DRIVER_RERUN2_EVIDENCE.md
+reports/pb1ds_publication/pb6_real_third_detector/PB1DS_PB6_POST_D2_DRIVER_RERUN3_EVIDENCE.md
+reports/pb1ds_publication/pb6_real_third_detector/PB1DS_PB6_POST_D2_DRIVER_RERUN4_EVIDENCE.md
+reports/pb1ds_publication/pb6_real_third_detector/PB1DS_PB6_POST_D2_DRIVER_RERUN5_EVIDENCE.md
+reports/pb1ds_publication/pb6_real_third_detector/PB1DS_PB6_POST_D2_DRIVER_RERUN6_EVIDENCE.md
+reports/pb1ds_publication/pb6_real_third_detector/PB1DS_PB6_POST_D2_DRIVER_RERUN7_EVIDENCE.md
+reports/pb1ds_publication/pb6_real_third_detector/PB1DS_PB6_POST_D2_DRIVER_RERUN8_EVIDENCE.md
+reports/pb1ds_publication/pb6_real_third_detector/PB1DS_PB6_POST_D2_DRIVER_RERUN9_EVIDENCE.md
+reports/pb1ds_publication/pb6_real_third_detector/PB1DS_PB6_POST_D2_DRIVER_RERUN_EVIDENCE.md
+reports/pb1ds_publication/pb6_real_third_detector/PB1DS_PB6_PROTOCOL_BINDING.json
+reports/pb1ds_publication/pb6_real_third_detector/shadow_precheck/PB1DS_PB6_D4_SHADOW_PROTOCOL_BINDING.json
+reports/pb7_p0_threshold_correctability/P0_GIT_STATE.txt
+reports/pb7_p0_threshold_correctability/P0_INPUT_MANIFEST.csv
+/_audit/G1_REPORT.md
+/_audit/G2_REPORT.md
+/_audit/G2_audit_publication_policy.csv
+/_audit/G2_code_changes/tools__pb6__d4_gate.py.patch
+/_audit/G2_code_changes/tools__r03_d0_extract_patchcore.py.patch
+/_audit/G2_code_changes/tools__r03_d1_extract_features.py.patch
+/_audit/G2_manual_review_resolution.csv
+/_audit/G2_repository_change_manifest.csv
+/_audit/G2_repository_tree.txt
+/_audit/classify_summary.json
+/_audit/manual_review.csv
+/_audit/migration_manifest.csv
+/_audit/path_injection_diffs.patch
+/_audit/repository_tree.txt
+/_audit/source_inventory.csv

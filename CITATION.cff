@@ -1,0 +1,24 @@
+cff-version: 1.2.1
+message: >-
+  If you use this software or the associated method, please cite the
+  manuscript. Publication metadata (DOI, volume, issue, pages) is
+  intentionally left unset while the manuscript is under review.
+title: >-
+  NorOpCal: Normal-Only Selective Operating-Point Calibration for Industrial
+  Visual Anomaly Detection under Acquisition Shift
+# NOTE: author list and identifiers are filled only with confirmed facts.
+# Do not add a DOI, volume, issue, pages, or publication date before formal
+# acceptance.
+authors: []
+type: software
+version: 0.1.0
+date-released: "2026-08-23"
+repository-code: >-
+  https://github.com/fatespur/NorOpCal
+keywords:
+  - anomaly detection
+  - industrial inspection
+  - threshold calibration
+  - distribution shift
+  - normal-only adaptation
+license: MIT

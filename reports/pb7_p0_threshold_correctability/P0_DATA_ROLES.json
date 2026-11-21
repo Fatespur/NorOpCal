@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0",
+  "stage": "PB7_P0_THRESHOLD_CORRECTABILITY_IDENTIFIABILITY_AUDIT",
+  "phase": "P0",
+  "timestamp": "2026-08-20T00:31:25Z",
+  "DEPLOYABLE": {
+    "definition": "usable by any deployable candidate / feature / actuator; must never depend on target anomaly labels, anomaly scores, or any oracle outcome",
+    "inputs": {
+      "source_normal": "S_source_normal (mv2_{cat}_public_good_regular_{det}_scores.npz)",
+      "target_normal": "S_target_normal (mv2_{cat}_public_good_{cond}_{det}_scores.npz)",
+      "detector_identity": "which detector produced the scores",
+      "category_identity": "category label (per-category detector deployment)",
+      "condition_metadata": "acquisition condition metadata (OPTIONAL; no PB7 candidate may depend on the condition label directly)"
+    }
+  },
+  "ORACLE_DIAGNOSTIC_ONLY": {
+    "definition": "usable ONLY for oracle diagnostic targets (O1/O2/O3) and diagnostic metrics; never a deployment input; never used to fit, select, or calibrate any deployable candidate",
+    "inputs": {
+      "anomaly_scores": "S_anomaly (mv2_{cat}_public_bad_regular_{det}_scores.npz)",
+      "anomaly_labels": "target anomaly labels",
+      "ba": "balanced accuracy outcome",
+      "fpr": "false-positive-rate outcome",
+      "fnr": "false-negative-rate outcome",
+      "oracle_threshold": "tau*_BA / tau*_SAFE",
+      "threshold_anomaly_outcomes": "threshold-specific anomaly outcomes"
+    }
+  },
+  "firewall": {
+    "mechanism": "code-level Firewall in pb7_p0_common.py: every score read is recorded with role; deployable computation must call assert_deployable_clean() which raises FIREWALL_VIOLATION if any anomaly (oracle-only) file was read on that path",
+    "deployable_loaders": [
+      "load_src",
+      "load_cnd"
+    ],
+    "oracle_loader": "load_anm"
+  },
+  "leakage_rule": "if any deployable candidate directly or indirectly uses target-bad / anomaly information, it is immediately marked LEAKAGE_INVALID and excluded from formal comparison"
+}

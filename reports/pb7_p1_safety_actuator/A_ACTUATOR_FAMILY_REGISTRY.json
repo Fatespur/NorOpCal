@@ -1,0 +1,44 @@
+{
+  "schema_version": "1.0",
+  "stage": "PB7_P1_SAFETY_CONSTRAINED_ACTUATOR_DEVELOPMENT",
+  "phase": "A",
+  "timestamp": "2026-08-20T01:06:27Z",
+  "n_families": 3,
+  "max_families": 3,
+  "families": {
+    "A_T2_RAW": {
+      "formula": "tau_raw = median_t + (MAD_t/MAD_s) * (tau_source - median_s)",
+      "source": "exact PB7-P0 T2 (Robust Location-Scale); MAD_s ~= 0 guarded to ratio 1.0",
+      "deployable_inputs": [
+        "source_normal",
+        "target_normal",
+        "tau_source"
+      ],
+      "anomaly_derived": false,
+      "outcome_driven": false
+    },
+    "A_TAIL_RAW": {
+      "formula": "tau_raw = Q95(target-normal)",
+      "source": "exact PB7-P0 T3 (Tail-Preserving); alpha_s = 0.05 frozen",
+      "deployable_inputs": [
+        "target_normal"
+      ],
+      "anomaly_derived": false,
+      "outcome_driven": false
+    },
+    "A_MEDIAN_RAW": {
+      "formula": "tau_raw = tau_source + (median_t - median_s)",
+      "source": "Conservative Location-Only; PB7-P0 median_shift is the PASS-B principal correctability signal (AUC 0.712 / LCO 0.714 / K8 0.802)",
+      "deployable_inputs": [
+        "source_normal",
+        "target_normal",
+        "tau_source"
+      ],
+      "anomaly_derived": false,
+      "outcome_driven": false
+    }
+  },
+  "no_anomaly_parameter": true,
+  "no_outcome_driven_addition": true,
+  "no_4th_family": true
+}

@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0",
+  "stage": "PB7_P1_SAFETY_CONSTRAINED_ACTUATOR_DEVELOPMENT",
+  "phase": "P0",
+  "timestamp": "2026-08-20T01:05:54Z",
+  "split_rule": "category-level deterministic SHA256 parity",
+  "salt": "PB7_P1_DEV_TEST_SPLIT_v1",
+  "assignment": {
+    "can": "DEV",
+    "fabric": "TEST",
+    "fruit_jelly": "DEV",
+    "rice": "TEST",
+    "sheet_metal": "TEST",
+    "vial": "TEST",
+    "wallplugs": "DEV",
+    "walnuts": "TEST"
+  },
+  "dev_categories": [
+    "can",
+    "fruit_jelly",
+    "wallplugs"
+  ],
+  "test_categories": [
+    "fabric",
+    "rice",
+    "sheet_metal",
+    "vial",
+    "walnuts"
+  ],
+  "note": "DEV used only for lambda/cutoff selection; TEST is one frozen evaluation"
+}

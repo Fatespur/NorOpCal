@@ -1,0 +1,196 @@
+{
+  "schema_version": "1.0",
+  "stage": "PB7_P1_SAFETY_CONSTRAINED_ACTUATOR_DEVELOPMENT",
+  "phase": "P0",
+  "timestamp": "2026-08-20T01:05:54Z",
+  "inherits_terminal": "PB7_P0_THRESHOLD_CORRECTABILITY_IDENTIFIED_BUT_SIMPLE_ACTUATORS_INSUFFICIENT",
+  "scientific_question": "Can a bounded normal-only actuator convert identified correctability into safe deployable threshold adaptation?",
+  "frozen_background": {
+    "pb7_p0_terminal": "F4 THRESHOLD_CORRECTABILITY_IDENTIFIED_BUT_SIMPLE_ACTUATORS_INSUFFICIENT",
+    "qm_route_closed": true,
+    "oracle_headroom": "22/117 (18.8%) safe-correctable; DINOv2 16/39 (41.0%)",
+    "correctability_identifiable": "median_shift AUC 0.712 (LCO 0.714, K8 0.802)",
+    "direction_magnitude_not_identifiable": "H2/H3 NOT SUPPORTED",
+    "pb7p0_best_always_on": "T2 mean delta_BA +0.040, CI_lo +0.021, mean delta_FNR +0.056 (FULL)",
+    "pb7p0_t4_abstaining": "harm_rate 0.376 but delta_FNR +0.055 still > +0.02"
+  },
+  "principal_settings": {
+    "primary_k": "8",
+    "auxiliary_k": [
+      "4",
+      "FULL"
+    ],
+    "k_repeats": 30,
+    "detectors": [
+      "dinov2_vits14",
+      "wide_resnet50_2",
+      "efficientad"
+    ],
+    "detector_names": {
+      "dinov2_vits14": "DINOv2 Memory",
+      "wide_resnet50_2": "PatchCore",
+      "efficientad": "EfficientAD"
+    },
+    "reporting": [
+      "POOLED",
+      "dinov2_vits14",
+      "wide_resnet50_2",
+      "efficientad"
+    ]
+  },
+  "safety_definition": {
+    "primary_constraint": "mean_delta_fnr <= +0.02",
+    "harmful_unit": "delta_ba < -0.02 OR delta_fnr > +0.02 (PB7-P0 frozen)",
+    "catastrophic_unit": "delta_fnr > +0.05 (PB7-P0 frozen)",
+    "reported": [
+      "harmful_unit_rate",
+      "catastrophic_harm_rate",
+      "worst_decile_delta_fnr",
+      "detector_stratified_delta_fnr"
+    ]
+  },
+  "utility_definition": {
+    "primary": "delta_ba",
+    "secondary": [
+      "delta_fpr",
+      "delta_fnr",
+      "coverage",
+      "benefit_precision",
+      "benefit_recall",
+      "harm_rate"
+    ],
+    "ranking": "AUROC/AUPR consistency check only (threshold-only must not change ranking)"
+  },
+  "dev_test_firewall": {
+    "split_rule": "category-level deterministic SHA256 parity (frozen salt)",
+    "split_salt": "PB7_P1_DEV_TEST_SPLIT_v1",
+    "dev_usage": [
+      "choose among preregistered lambda values",
+      "choose among preregistered cutoff values",
+      "choose a single global operating setting"
+    ],
+    "test_usage": "one frozen evaluation; no test outcome feedback",
+    "forbidden_test_use": [
+      "lambda",
+      "cutoff",
+      "candidate selection",
+      "detector-specific tuning (unless preregistered)"
+    ],
+    "assignment": {
+      "can": "DEV",
+      "fabric": "TEST",
+      "fruit_jelly": "DEV",
+      "rice": "TEST",
+      "sheet_metal": "TEST",
+      "vial": "TEST",
+      "wallplugs": "DEV",
+      "walnuts": "TEST"
+    }
+  },
+  "registries": {
+    "actuator_families": {
+      "A_T2_RAW": "tau_raw = median_t + (MAD_t/MAD_s)*(tau_source - median_s); exact PB7-P0 T2 formula (MAD_s ~= 0 guarded)",
+      "A_TAIL_RAW": "tau_raw = Q95(target-normal); exact PB7-P0 T3 formula",
+      "A_MEDIAN_RAW": "tau_raw = tau_source + (median_t - median_s); conservative location-only, PB7-P0 median_shift rationale"
+    },
+    "bounding": {
+      "form": "tau_used = tau_source + lambda * (tau_raw - tau_source)",
+      "lambda_grid": [
+        0.25,
+        0.5,
+        0.75,
+        1.0
+      ],
+      "no_direction_switching": true,
+      "note": "bounding only shrinks toward tau_source or abstains; never flips direction, no anomaly-dependent sign switch"
+    },
+    "abstention_gate": {
+      "signal": "median_shift (PB7-P0 PASS-B principal, AUC 0.712 / LCO 0.714 / K8 0.802)",
+      "form": "adapt iff median_shift >= c else NoAdapt",
+      "cutoff_grid": [
+        "Q50",
+        "Q60",
+        "Q70",
+        "Q80"
+      ],
+      "cutoff_quantiles": {
+        "Q50": 0.5,
+        "Q60": 0.6,
+        "Q70": 0.7,
+        "Q80": 0.8
+      },
+      "cutoff_source": "DEV FULL-support median_shift distribution (pre-registered)",
+      "coverage_floor": 0.1
+    }
+  },
+  "hypotheses": {
+    "H1_BOUNDED_CORRECTION_RETAINS_UTILITY": {
+      "claim": "limiting actuator correction magnitude retains substantial positive delta_BA",
+      "stage": "D/E"
+    },
+    "H2_SAFETY_IMPROVES_MONOTONICALLY_WITH_CONSERVATISM": {
+      "claim": "as lambda decreases, delta_FNR and harm rate decrease monotonically",
+      "stage": "F"
+    },
+    "H3_ABSTENTION_ADDS_SAFETY_VALUE": {
+      "claim": "correctability gate + bounded actuator reduces mean delta_FNR and harmful-unit rate vs Always-On bounded, retaining utility",
+      "stage": "E"
+    },
+    "H4_K8_SUFFICIENT": {
+      "claim": "the main safety-utility tradeoff is preserved at K=8",
+      "stage": "E"
+    },
+    "H5_SAFE_DEPLOYABLE_OPERATING_POINT_EXISTS": {
+      "claim": "at least one preregistered candidate satisfies delta_FNR <= +0.02 and delta_BA > 0 with CI supporting nonzero benefit under strict OOF / held-out evaluation",
+      "stage": "E"
+    },
+    "H6_DETECTOR_DEPENDENT": {
+      "claim": "DINOv2 is the main beneficiary; PatchCore/EfficientAD may abstain or have near-zero coverage without forced adaptation",
+      "stage": "E/F"
+    }
+  },
+  "forbidden": [
+    "XGBoost / Random Forest / neural network / Transformer / AutoML",
+    "large feature search / outcome-driven actuator family search",
+    "using target anomaly to select lambda",
+    "using target anomaly to select cutoff",
+    "using target anomaly to decide correction direction",
+    "using target anomaly to decide abstention",
+    "per-test-entity oracle tuning",
+    "modifying the BENEFIT definition",
+    "modifying the delta_FNR <= +0.02 safety constraint",
+    "modifying the PB7-P0 terminal",
+    "overwriting PB6 / PB7-P0 sealed artifacts",
+    "continuing to use the old QM",
+    "claiming threshold-only gain as AUROC / representation improvement",
+    "deleting a detector because PatchCore/EfficientAD results are poor",
+    "adding candidates after seeing test results"
+  ],
+  "input_manifest": {
+    "n_rows": 297,
+    "n_score_source": 24,
+    "n_score_target": 117,
+    "n_score_anomaly": 24,
+    "n_pb7p0_evidence": 132,
+    "n_entity_rows": 117,
+    "file": "P0_INPUT_MANIFEST.csv"
+  },
+  "p0_gate": {
+    "schema_version": "1.0",
+    "stage": "PB7_P1_SAFETY_CONSTRAINED_ACTUATOR_DEVELOPMENT",
+    "phase": "P0",
+    "timestamp": "2026-08-20T01:05:54Z",
+    "checks": {
+      "pb7p0_evidence_bound": true,
+      "score_roles_complete": true,
+      "entity_table_bound": true,
+      "split_deterministic": true,
+      "split_covers_all_categories": true,
+      "actuator_families_le_3": true,
+      "lambda_in_unit_interval": true,
+      "no_anomaly_in_deployable": true
+    },
+    "verdict": "PASS",
+    "terminal": "PROCEED_TO_A"
+  }
+}

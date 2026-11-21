@@ -1,0 +1,12 @@
+{
+  "schema_version": "1.0",
+  "phase": "F",
+  "authoritative_primary_reused": true,
+  "primary_bootstrap_recomputed_for_prettier_interval": false,
+  "paired_B": 10000,
+  "paired_seed": 20260820,
+  "multiplicity": "effect sizes and CIs reported; no p-value family tested",
+  "independence_unit": "category-aware; entity summaries average support-repeat uncertainty",
+  "verdict": "PASS",
+  "terminal": "PROCEED_TO_G"
+}

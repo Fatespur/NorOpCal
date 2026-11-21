@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0",
+  "stage": "PB7_P0_THRESHOLD_CORRECTABILITY_IDENTIFIABILITY_AUDIT",
+  "phase": "A",
+  "timestamp": "2026-08-20T00:35:49Z",
+  "checks": {
+    "h1_any_detector_safe_correctable": true,
+    "h1_detail": {
+      "dinov2_vits14": {
+        "n_safe_correctable": 16,
+        "frac": 0.41025641025641024
+      },
+      "wide_resnet50_2": {
+        "n_safe_correctable": 1,
+        "frac": 0.02564102564102564
+      },
+      "efficientad": {
+        "n_safe_correctable": 5,
+        "frac": 0.1282051282051282
+      }
+    },
+    "generalized_threshold_headroom": true,
+    "generalized_detail": {
+      "n_delta_ba_safe_ge_002_pooled": 103,
+      "frac_delta_ba_safe_ge_002_pooled": 0.8803418803418803
+    },
+    "n_entities": 117
+  },
+  "verdict": "PASS",
+  "terminal": "PROCEED_TO_B"
+}

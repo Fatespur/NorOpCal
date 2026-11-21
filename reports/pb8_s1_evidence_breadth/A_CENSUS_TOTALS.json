@@ -1,0 +1,13 @@
+{
+  "n_units": 39,
+  "n_raw_target_normal_images_across_all_units": 315,
+  "n_unique_images": 315,
+  "n_duplicate_hash_rows": 0,
+  "n_TEST_units": 26,
+  "n_TEST_K8_eligible_units": 10,
+  "n_TEST_K8_eligible_DINOv2_units": 10,
+  "TEST_K8_eligible_categories": [
+    "fabric",
+    "walnuts"
+  ]
+}

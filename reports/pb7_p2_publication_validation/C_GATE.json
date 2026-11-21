@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0",
+  "stage": "PB7_P2_PUBLICATION_READINESS_CONFIRMATORY_VALIDATION",
+  "phase": "C",
+  "timestamp": "2026-08-20T01:27:49Z",
+  "n_repeats": 200,
+  "checks": {
+    "full_pooled_dba": 0.010773948273948269,
+    "k8_median_dba": 0.012499999999999995,
+    "k8_positive_dba_freq": 1.0,
+    "k8_safety_pass_freq": 0.965,
+    "k8_strong_stability_median_ge_60pct_full": true,
+    "k8_jaccard_pooled": 0.6459130553282716,
+    "k8_jaccard_dinov2": 0.853869346733597
+  },
+  "verdict": "PASS",
+  "terminal": "PROCEED_TO_D"
+}

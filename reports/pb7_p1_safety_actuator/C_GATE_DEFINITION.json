@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0",
+  "stage": "PB7_P1_SAFETY_CONSTRAINED_ACTUATOR_DEVELOPMENT",
+  "phase": "C",
+  "timestamp": "2026-08-20T01:07:37Z",
+  "signal": "median_shift (PB7-P0 PASS-B principal)",
+  "signal_evidence": {
+    "correctable_auc": 0.712,
+    "lco_auc": 0.714,
+    "k8_corr_auc": 0.802
+  },
+  "gate_form": "adapt iff median_shift >= c else NoAdapt",
+  "cutoff_selection": "Option A (DEV-selected from pre-registered grid)",
+  "cutoff_grid": [
+    "Q50",
+    "Q60",
+    "Q70",
+    "Q80"
+  ],
+  "cutoff_quantiles": {
+    "Q50": 0.5,
+    "Q60": 0.6,
+    "Q70": 0.7,
+    "Q80": 0.8
+  },
+  "cutoff_source": "DEV FULL-support median_shift distribution (39 entities)",
+  "cutoff_values": {
+    "Q50": 0.015890181064605713,
+    "Q60": 0.020489937067031862,
+    "Q70": 0.03268062472343444,
+    "Q80": 0.052751266956329354
+  },
+  "coverage_floor": 0.1,
+  "no_score_redefinition": true,
+  "no_test_outcome_use": true
+}

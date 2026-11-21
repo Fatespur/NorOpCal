@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0",
+  "stage": "PB8_PUBLICATION_BENCHMARK_ABLATION_CLAIM_FREEZE",
+  "phase": "P0",
+  "timestamp": "2026-08-20T02:00:08Z",
+  "checks": {
+    "n_artifacts_bound": 30,
+    "n_artifacts_exist": 30,
+    "all_artifacts_exist": true,
+    "primary_estimand_frozen": true,
+    "report_hierarchy_frozen": true,
+    "safety_budget": 0.02,
+    "firewall_declared": true
+  },
+  "verdict": "PASS",
+  "terminal": "PROCEED_TO_A"
+}

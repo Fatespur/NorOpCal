@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0",
+  "phase": "P0",
+  "verdict": "PASS",
+  "n_bound_artifacts": 58,
+  "deployable_normal_score_files_bound": 57,
+  "oracle_only_excluded_from_phase1": true,
+  "anomaly_outcome_loaded": false,
+  "frozen_scope_sha256": "1180f089f13162402283c046204640288b658d42696d2df5db88c077b5de581b",
+  "terminal": "PROCEED_TO_A"
+}

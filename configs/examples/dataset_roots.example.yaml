@@ -1,0 +1,16 @@
+# Example: local dataset roots for Level-2 reproduction.
+# Copy to your environment setup and export as environment variables, e.g.
+#
+#   PowerShell:
+#     $env:NOROPCAL_MVTEC_AD2_ROOT  = "D:/data/mvtec_ad_2"
+#     $env:NOROPCAL_PB6_WORK_ROOT   = "D:/work/efficientad_pb6"
+#     $env:NOROPCAL_AEBAD_S_ROOT    = "D:/data/AeBAD_S"   # only for legacy AeBAD scripts
+#
+#   bash:
+#     export NOROPCAL_MVTEC_AD2_ROOT=/data/mvtec_ad_2
+#
+# The repository never ships datasets; see docs/DATASETS.md for the required
+# directory layout.
+mvtec_ad_2_root: "SET_VIA_NOROPCAL_MVTEC_AD2_ROOT"
+efficientad_work_root: "SET_VIA_NOROPCAL_PB6_WORK_ROOT"
+aebad_s_root: "SET_VIA_NOROPCAL_AEBAD_S_ROOT"        # optional, legacy only

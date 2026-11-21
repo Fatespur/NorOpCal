@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0",
+  "stage": "PB7_P1_SAFETY_CONSTRAINED_ACTUATOR_DEVELOPMENT",
+  "phase": "P0",
+  "timestamp": "2026-08-20T01:05:54Z",
+  "DEPLOYABLE": {
+    "definition": "usable by any deployable candidate / feature / actuator; must never depend on target anomaly labels, anomaly scores, or oracle outcomes",
+    "inputs": [
+      "source_normal",
+      "target_normal",
+      "detector_identity",
+      "category_identity",
+      "condition_metadata (OPTIONAL)"
+    ]
+  },
+  "ORACLE_DIAGNOSTIC_ONLY": {
+    "definition": "usable ONLY for oracle diagnostic targets and diagnostic metrics; never a deployment input; never used to fit/select/calibrate any candidate",
+    "inputs": [
+      "anomaly_scores",
+      "anomaly_labels",
+      "ba",
+      "fpr",
+      "fnr",
+      "oracle_threshold",
+      "correctable_safe"
+    ]
+  },
+  "firewall": {
+    "mechanism": "code-level Firewall (pb7_p0_common.py); deployable computation must call assert_deployable_clean() which raises FIREWALL_VIOLATION if any anomaly (oracle-only) file was read on that path"
+  },
+  "leakage_rule": "if any deployable candidate directly or indirectly uses target-bad / anomaly information, it is immediately marked LEAKAGE_INVALID"
+}

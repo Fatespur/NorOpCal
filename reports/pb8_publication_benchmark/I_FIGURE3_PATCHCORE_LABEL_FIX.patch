@@ -1,0 +1,10 @@
+diff --git a/tools/pb8_publication_benchmark/plot_figures.py b/tools/pb8_publication_benchmark/plot_figures.py
+--- a/tools/pb8_publication_benchmark/plot_figures.py
++++ b/tools/pb8_publication_benchmark/plot_figures.py
+@@ -84,7 +84,7 @@ def figure_3() -> list[Path]:
+     labels = {
+         "dinov2_vits14": "DINOv2 ViT-S/14",
+-        "wide_resnet50_2": "WideResNet50-2",
++        "wide_resnet50_2": "PatchCore (WRN50-2)",
+         "efficientad": "EfficientAD",
+     }

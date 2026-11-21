@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "noropcal-staging"
+version = "0.1.0"
+description = "NorOpCal: Normal-Only Selective Operating-Point Calibration (GitHub staging package)"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+dependencies = [
+  "numpy>=1.26",
+  "pandas>=2.1",
+  "scipy>=1.11",
+  "scikit-learn>=1.4",
+  "PyYAML>=6.0.1",
+]
+
+[project.optional-dependencies]
+torch = ["torch>=2.2", "torchvision>=0.17"]
+dev = ["pytest>=8.2", "mypy>=1.10", "ruff>=0.6"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["shiftad*", "noropcal*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+markers = [
+  "unit: fast fixture-based unit tests",
+  "integration: multi-component tests (still fixture-based)",
+  "parity: frozen-result verification against sealed artifacts",
+]

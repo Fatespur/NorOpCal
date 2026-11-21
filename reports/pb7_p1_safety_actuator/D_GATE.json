@@ -1,0 +1,39 @@
+{
+  "schema_version": "1.0",
+  "stage": "PB7_P1_SAFETY_CONSTRAINED_ACTUATOR_DEVELOPMENT",
+  "phase": "D",
+  "timestamp": "2026-08-20T01:09:15Z",
+  "checks": {
+    "candidate_grid_frozen": true,
+    "n_gated_48": true,
+    "n_always_on_12": true,
+    "n_no_adapt_1": true,
+    "no_new_family": true
+  },
+  "no_safe_dev_candidate": false,
+  "selected": {
+    "family": "A_MEDIAN_RAW",
+    "lambda": 0.25,
+    "cutoff_key": "Q50",
+    "gate": true,
+    "kind": "GATED",
+    "mean_delta_ba": 0.02348148148148148,
+    "mean_delta_fpr": -0.058444444444444445,
+    "mean_delta_fnr": 0.011481481481481494,
+    "benefit_rate": 0.21000000000000002,
+    "harm_rate": 0.1488888888888889,
+    "catastrophic_rate": 0.1488888888888889,
+    "coverage": 0.5877777777777777,
+    "benefit_precision": 0.2625,
+    "benefit_recall": 0.3333333333333333,
+    "worst_decile_delta_fnr": 0.08222222222222232,
+    "n": 30.0,
+    "n_entities": 30,
+    "safe": true,
+    "tie_lam": 0.25,
+    "tie_sim": 0
+  },
+  "n_safe_candidates": 14,
+  "verdict": "PASS",
+  "terminal": "PROCEED_TO_E"
+}

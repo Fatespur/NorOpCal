@@ -1,0 +1,9 @@
+{
+  "python": "3.13.6 (tags/v3.13.6:4e66535, Aug  6 2025, 14:36:00) [MSC v.1944 64 bit (AMD64)]",
+  "numpy": "2.3.2",
+  "timer": "time.perf_counter_ns",
+  "loops": 100000,
+  "n_cases": 10,
+  "tracemalloc_current_bytes": 336,
+  "tracemalloc_peak_bytes": 3632
+}

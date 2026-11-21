@@ -1,0 +1,11 @@
+category,condition,harm,delta_ba,delta_fnr,coverage,n_repeats
+fabric,overexposed,0.0,0.0,0.0,0.0,30
+fabric,shift_1,0.0,0.0,0.0,0.0,30
+fabric,shift_2,0.0,0.0651515151515151,0.0,1.0,30
+fabric,shift_3,0.0,0.0696969696969697,0.0,0.7666666666666667,30
+fabric,underexposed,0.0,0.0,0.0,0.0,30
+walnuts,overexposed,0.0,0.0,0.0,0.0,30
+walnuts,shift_1,0.3666666666666666,0.0877777777777777,0.0244444444444444,1.0,30
+walnuts,shift_2,0.0,0.0,0.0,0.2666666666666666,30
+walnuts,shift_3,0.0,0.1,0.0,1.0,30
+walnuts,underexposed,0.0,0.0,0.0,0.0,30

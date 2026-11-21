@@ -1,0 +1,75 @@
+{
+  "schema_version": "1.0",
+  "stage": "PB7_P1_SAFETY_CONSTRAINED_ACTUATOR_DEVELOPMENT",
+  "phase": "FINAL",
+  "timestamp": "2026-08-20T01:16:00Z",
+  "inherits_terminal": "PB7_P0_THRESHOLD_CORRECTABILITY_IDENTIFIED_BUT_SIMPLE_ACTUATORS_INSUFFICIENT",
+  "dev_safe_candidate_exists": true,
+  "dev_selected": {
+    "family": "A_MEDIAN_RAW",
+    "lambda": 0.25,
+    "cutoff_key": "Q50",
+    "dev_mean_delta_ba": 0.02348148148148148,
+    "dev_mean_delta_fnr": 0.011481481481481494,
+    "dev_harm_rate": 0.1488888888888889,
+    "dev_coverage": 0.5877777777777777
+  },
+  "test_delta_ba": 0.011974747474747471,
+  "test_delta_ba_ci": [0.010111111111111107, 0.013838383838383836],
+  "test_delta_fnr": 0.012666666666666663,
+  "test_harm_rate": 0.14333333333333334,
+  "test_catastrophic_rate": 0.14333333333333334,
+  "test_coverage": 0.3422222222222222,
+  "test_benefit_precision": 0.2708333333333333,
+  "test_benefit_recall": 0.2,
+  "test_worst_decile_delta_fnr": 0.07777777777777777,
+  "selectivity_value": true,
+  "k8_supported": true,
+  "detector_dependence": {
+    "dinov2_vits14": {
+      "mean_delta_ba": 0.03226262626262627,
+      "mean_delta_fnr": 0.002444444444444444,
+      "harm_rate": 0.03666666666666667,
+      "coverage": 0.4033333333333333,
+      "decomposition": "USEFUL_SAFE_SELECTABLE"
+    },
+    "wide_resnet50_2": {
+      "mean_delta_ba": -0.006611111111111123,
+      "mean_delta_fnr": 0.02155555555555555,
+      "harm_rate": 0.24666666666666667,
+      "coverage": 0.24666666666666667,
+      "decomposition": "ACTUATOR_MISMATCH"
+    },
+    "efficientad": {
+      "mean_delta_ba": 0.01027272727272727,
+      "mean_delta_fnr": 0.013999999999999995,
+      "harm_rate": 0.14666666666666667,
+      "coverage": 0.3766666666666667,
+      "decomposition": "NO_HEADROOM"
+    }
+  },
+  "gates": {
+    "G1_utility": "PASS",
+    "G2_fnr_safety": "PASS",
+    "G3_harm_reduction": "PASS",
+    "G4_selectivity_value": "PASS",
+    "G5_coverage": "PASS",
+    "G6_k8_principal": "PASS",
+    "G7_detector_specificity": "DINOv2-dominant"
+  },
+  "hypotheses": {
+    "H1_bounded_correction_retains_utility": "SUPPORTED",
+    "H2_safety_improves_with_conservatism": "SUPPORTED",
+    "H3_abstention_adds_safety_value": "SUPPORTED",
+    "H4_k8_sufficient": "SUPPORTED",
+    "H5_safe_deployable_operating_point_exists": "SUPPORTED",
+    "H6_detector_dependent": "SUPPORTED"
+  },
+  "terminal": "PB7_P1_DETECTOR_SPECIFIC_SAFE_ACTUATOR_SUPPORTED",
+  "claim_scope": "DINOv2-dominant detector-dependent threshold adaptation; NOT detector-agnostic",
+  "oracle_upper_bound_diagnostic_only": {
+    "mean_delta_ba": 0.0996,
+    "mean_delta_fnr": -0.3026,
+    "coverage": 0.8718
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.0",
+  "stage": "PB8_S1_AD2_K8_EVIDENCE_BREADTH",
+  "phase": "P0",
+  "note": "Original PB8 principal scope frozen verbatim; PB8-S1 may not alter it.",
+  "n_total_categories": 8,
+  "categories": [
+    "can",
+    "fabric",
+    "fruit_jelly",
+    "rice",
+    "sheet_metal",
+    "vial",
+    "wallplugs",
+    "walnuts"
+  ],
+  "dev_test_split": {
+    "can": "DEV",
+    "fabric": "TEST",
+    "fruit_jelly": "DEV",
+    "rice": "TEST",
+    "sheet_metal": "TEST",
+    "vial": "TEST",
+    "wallplugs": "DEV",
+    "walnuts": "TEST"
+  },
+  "original_k8_eligible_categories": [
+    "fabric",
+    "walnuts"
+  ],
+  "original_test_k8_dinov2_units": 10,
+  "original_test_k8_pooled_units": 30,
+  "original_support_definition_semantics": "unit = category x acquisition-condition x detector; target-normal = test_public good images under that acquisition-condition filename suffix; source = test_public good_regular; K8 eligibility = TEST-side unit with target-normal FULL support n >= 8; anomaly = public_bad_regular (frozen).",
+  "frozen_q50": 0.015890181064605713,
+  "frozen_lambda": 0.25,
+  "frozen_safety_budget_dfNR": 0.02,
+  "frozen_principal_k": "8",
+  "frozen_principal_result_preserved": {
+    "fabric_plus_walnuts": true,
+    "n_DINOv2_K8_units": 10,
+    "delta_ba_pp": 3.23,
+    "ci_95_pp": [
+      2.7,
+      3.76
+    ],
+    "mean_delta_fnr_pp": 0.24,
+    "harm_pct": 3.67,
+    "coverage_pct": 40.33
+  }
+}

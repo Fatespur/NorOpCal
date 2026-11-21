@@ -1,0 +1,59 @@
+diff --git a/tools/pb8_publication_benchmark/b_benchmark.py b/tools/pb8_publication_benchmark/b_benchmark.py
+--- a/tools/pb8_publication_benchmark/b_benchmark.py
++++ b/tools/pb8_publication_benchmark/b_benchmark.py
+@@ -25,6 +25,27 @@ OUT.mkdir(parents=True, exist_ok=True)
+ DET = "dinov2_vits14"
+ K_GRID = ["4", "8", "FULL"]
+ 
++REQUIRED_METRIC_COLUMNS = [
++    "ba",
++    "fpr",
++    "fnr",
++    "delta_ba",
++    "delta_fpr",
++    "delta_fnr",
++    "harm",
++]
++
++
++def valid_metric_rows(df: pd.DataFrame) -> pd.DataFrame:
++    """Return only entities eligible for the requested K-support estimand.
++
++    The frozen PB7 evaluator preserves an entity row with NaN metrics when
++    ``K > target_normal_n``. Keeping those rows in the per-entity artifact is
++    useful for auditing exclusions, but publication aggregates must exclude
++    them before counting eligible categories or averaging absolute metrics.
++    """
++    return df.dropna(subset=REQUIRED_METRIC_COLUMNS).copy()
++
+ 
+ def ba_before_after(row: pd.Series) -> tuple[float, float]:
+     return float(row["ba"] - row["delta_ba"]), float(row["ba"])
+@@ -119,15 +140,18 @@ def main() -> None:
+         dino = sub[sub.detector == DET]
+         pooled = sub
+         for group, df in [("DINOv2", dino), ("POOLED", pooled)]:
+-            s = P8.summary_metrics(df)
+-            b = P8.confirmatory_bootstrap(df, seed=P8.CONF_BOOT_SEED, b=P8.CONF_BOOT_B)
+-            ba_b = np.mean([ba_before_after(r)[0] for _, r in df.iterrows()])
+-            ba_a = np.mean([ba_before_after(r)[1] for _, r in df.iterrows()])
+-            fpr_b = np.mean([fpr_before_after(r)[0] for _, r in df.iterrows()])
+-            fpr_a = np.mean([fpr_before_after(r)[1] for _, r in df.iterrows()])
+-            fnr_b = np.mean([fnr_before_after(r)[0] for _, r in df.iterrows()])
+-            fnr_a = np.mean([fnr_before_after(r)[1] for _, r in df.iterrows()])
+-            n_cats = int(df["category"].nunique())
++            valid = valid_metric_rows(df)
++            s = P8.summary_metrics(valid)
++            b = P8.confirmatory_bootstrap(
++                valid, seed=P8.CONF_BOOT_SEED, b=P8.CONF_BOOT_B
++            )
++            ba_b = np.mean([ba_before_after(r)[0] for _, r in valid.iterrows()])
++            ba_a = np.mean([ba_before_after(r)[1] for _, r in valid.iterrows()])
++            fpr_b = np.mean([fpr_before_after(r)[0] for _, r in valid.iterrows()])
++            fpr_a = np.mean([fpr_before_after(r)[1] for _, r in valid.iterrows()])
++            fnr_b = np.mean([fnr_before_after(r)[0] for _, r in valid.iterrows()])
++            fnr_a = np.mean([fnr_before_after(r)[1] for _, r in valid.iterrows()])
++            n_cats = int(valid["category"].nunique())
+             safety_fail = bool(s["mean_delta_fnr"] > P8.DFNR_MAX + 1e-12)
+             main_rows.append(
+                 {

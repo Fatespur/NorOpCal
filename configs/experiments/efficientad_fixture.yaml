@@ -1,0 +1,40 @@
+experiment_name: efficientad_fixture_acceptance
+dataset:
+  name: synthetic_fixture
+  root: data/synthetic_fixture
+  categories: [widget]
+  split: train
+  image_size: [32, 32]
+runtime:
+  seed: 23
+  device: cpu
+  output_dir: outputs/efficientad_fixture
+  log_level: INFO
+  batch_size: 2
+calibration:
+  enabled: false
+model:
+  name: efficientad
+  is_fixture: true
+  teacher:
+    pretrained: false
+    checkpoint: null
+    allow_download: false
+    use_cache: false
+    out_channels: 16
+  student:
+    ae_channels: 16
+  training:
+    learning_rate: 1.0e-3
+    weight_decay: 1.0e-5
+    num_steps: 5
+    batch_size: 2
+    lambda_global: 1.0
+  scoring:
+    local_weight: 1.0
+    global_weight: 1.0
+    smoothing_sigma: 0.0
+    image_threshold: 0.05
+    pixel_threshold: 0.05
+    threshold_source: fixture_predeclared_not_dataset_tuned
+  input_size: [32, 32]

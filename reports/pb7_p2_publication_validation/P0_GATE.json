@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0",
+  "stage": "PB7_P2_PUBLICATION_READINESS_CONFIRMATORY_VALIDATION",
+  "phase": "P0",
+  "timestamp": "2026-08-20T01:25:10Z",
+  "checks": {
+    "principal_policy_frozen": true,
+    "manifest_sha256_bound": true,
+    "n_manifest_rows": 175,
+    "n_source_normal_files": 24,
+    "n_target_normal_files": 117,
+    "n_anomaly_files": 24,
+    "hypotheses_registered": 7,
+    "firewall_declared": true
+  },
+  "verdict": "PASS",
+  "terminal": "PROCEED_TO_A"
+}

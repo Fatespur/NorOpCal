@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0",
+  "stage": "PB8_PUBLICATION_BENCHMARK_ABLATION_CLAIM_FREEZE",
+  "phase": "P0",
+  "detector": "DINOv2 (dinov2_vits14)",
+  "setting": "K8",
+  "policy": "frozen PB7-P1/P2 principal (A_MEDIAN_RAW, lambda=0.25, median_shift>=Q50)",
+  "primary_metric": "delta_ba (balanced accuracy change vs NoAdapt)",
+  "primary_safety_metric": "delta_fnr (mean, budget <= +0.02)",
+  "secondary_safety": "harm rate (delta_ba < -0.02 or delta_fnr > +0.02)",
+  "tertiary": "coverage, benefit precision, benefit recall, catastrophic rate",
+  "safety_budget": 0.02,
+  "report_hierarchy": {
+    "primary": "DINOv2 K8",
+    "secondary": "Pooled K8",
+    "mechanism_negative_controls": [
+      "PatchCore K8",
+      "EfficientAD K8"
+    ],
+    "rule": "pooled results must not precede DINOv2 to avoid a universal impression"
+  }
+}

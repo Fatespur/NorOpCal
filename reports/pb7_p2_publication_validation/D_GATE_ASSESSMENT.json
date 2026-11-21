@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0",
+  "stage": "PB7_P2_PUBLICATION_READINESS_CONFIRMATORY_VALIDATION",
+  "phase": "D",
+  "timestamp": "2026-08-20T01:34:30Z",
+  "note": "Protocol-conformant D3 gate. The raw D_GATE.json additionally applied a non-protocol DINOv2 gated-vs-always-on dFNR-advantage criterion; that is assessed here as an H5 hypothesis nuance, not a gate requirement.",
+  "d3_publication_significance": {
+    "dinov2_dba_ci_lo": 0.0269696969696969,
+    "dinov2_dba_ci_lo_gt_0": true,
+    "dinov2_dfnr_mean": 0.0024547111111111,
+    "dinov2_dfnr_ci_hi": 0.0048888888888888,
+    "dinov2_safety_compatible": true,
+    "verdict": "PASS"
+  },
+  "d2_paired_comparison": {
+    "utility_retention": {
+      "gated_vs_noadapt_dba": 0.0322848565656565,
+      "gated_vs_noadapt_dba_ci_lo": 0.0269696969696969
+    },
+    "safety_improvement": {
+      "gated_vs_t2_dfnr": -0.0653005777777777,
+      "gated_vs_t2_dfnr_ci_hi": -0.0199999999999999
+    }
+  },
+  "h5_selectivity_necessity": {
+    "pooled_dfnr_diff_gated_minus_always_on": -0.001636474074074,
+    "pooled_harm_diff_gated_minus_always_on": -0.0245471111111111,
+    "pooled_safety_advantage_supported": true,
+    "dinov2_dfnr_diff_gated_minus_always_on": 0.0,
+    "dinov2_safety_advantage_supported": false,
+    "interpretation": "On DINOv2 the gate leaves dFNR/harm unchanged vs Always-On (always-on is already safe: dFNR=0.0025, harm=0.037); the gate acts as coverage reduction (0.40 vs 0.69), not as a DINOv2 safety mechanism. The gate's safety value is pooled-level (protects PatchCore/EfficientAD from harm). Safety on DINOv2 is provided by the bounded actuator (lambda=0.25), not by the gate."
+  },
+  "overall_verdict": "PASS_WITH_NUANCE",
+  "terminal": "PROCEED_TO_E"
+}

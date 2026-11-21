@@ -1,0 +1,6 @@
+baseline,description,sign_accuracy,n
+B0_ALWAYS_NO_ADAPT,predict no change for all,0.1111111111111111,117
+B1_ALWAYS_RAISE,predict raise for all,0.18803418803418803,117
+B2_ALWAYS_LOWER,predict lower for all,0.7008547008547008,117
+B3_DETECTOR_ONLY_PRIOR,per-detector majority sign,0.7884615384615384,104
+B4_T3_EXCEEDANCE_RULE,T3 natural sign rule,0.36538461538461536,104

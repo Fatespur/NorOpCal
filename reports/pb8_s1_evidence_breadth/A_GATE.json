@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0",
+  "phase": "A",
+  "verdict": "PASS",
+  "n_units_enumerated": 39,
+  "all_units_match_frozen_39": true,
+  "all_score_counts_match_raw_image_counts": true,
+  "n_duplicate_hash_rows": 0,
+  "test_k8_eligible_categories": [
+    "fabric",
+    "walnuts"
+  ],
+  "anomaly_outcome_loaded": false,
+  "base_sha256": "ab0f767ea690315485fdb3fd9069b910725662e582b5d65b973aa9553502d0b4",
+  "terminal": "PROCEED_TO_B"
+}

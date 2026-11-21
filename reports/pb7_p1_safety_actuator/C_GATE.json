@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0",
+  "stage": "PB7_P1_SAFETY_CONSTRAINED_ACTUATOR_DEVELOPMENT",
+  "phase": "C",
+  "timestamp": "2026-08-20T01:07:37Z",
+  "checks": {
+    "signal_frozen_median_shift": true,
+    "gate_form_simple_threshold": true,
+    "cutoff_grid_frozen": true,
+    "cutoff_source_dev_only": true,
+    "coverage_floor_feasible_on_dev_k8": true,
+    "gate_direction_prefers_correctable": true
+  },
+  "detail": {
+    "cutoff_values": {
+      "Q50": 0.015890181064605713,
+      "Q60": 0.020489937067031862,
+      "Q70": 0.03268062472343444,
+      "Q80": 0.052751266956329354
+    },
+    "dev_k8_coverage": {
+      "Q50": 0.5877777777777777,
+      "Q60": 0.5488888888888889,
+      "Q70": 0.4211111111111111,
+      "Q80": 0.2677777777777778
+    },
+    "dev_frac_correctable_high_median_shift": 0.5,
+    "dev_frac_correctable_low_median_shift": 0.10526315789473684
+  },
+  "verdict": "PASS",
+  "terminal": "PROCEED_TO_D"
+}

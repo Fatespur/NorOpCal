@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "stage": "PB7_P0_THRESHOLD_CORRECTABILITY_IDENTIFIABILITY_AUDIT",
+  "phase": "C",
+  "timestamp": "2026-08-20T00:41:09Z",
+  "checks": {
+    "sign_consistency_k8": 0.9333333333333333,
+    "sign_consistency_k8_ok": true,
+    "swamp_ratio_k8": 4.458352921132916,
+    "swamp_ratio_k8_ok": true,
+    "detector_pattern_rho_k8": 1.0,
+    "detector_pattern_rho_k8_ok": true,
+    "corr_auc_k8": 0.8016666666666666,
+    "corr_auc_k8_ok": true
+  },
+  "principal_feature": "median_shift",
+  "verdict": "PASS",
+  "terminal": "PROCEED_TO_D"
+}

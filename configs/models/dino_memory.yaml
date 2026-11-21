@@ -1,0 +1,30 @@
+name: dino_memory
+backbone:
+  name: dinov2_vits14
+  layers: [2, 5, 8, 11]
+  input_size: [224, 224]
+  checkpoint: null
+  allow_download: false
+  use_cache: true
+  dtype: float32
+feature_fusion:
+  mode: concat
+  normalize: true
+  target_grid: null
+memory:
+  coreset:
+    method: kcenter
+    ratio: 0.1
+    target_size: null
+  nearest_neighbors:
+    backend: auto
+    metric: euclidean
+    k: 1
+    chunk_size: 1024
+scoring:
+  image_aggregation: max
+  top_k: 1
+  smoothing_sigma: 0.0
+  image_threshold: null
+  pixel_threshold: null
+  threshold_source: null

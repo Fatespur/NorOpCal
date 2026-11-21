@@ -1,0 +1,7 @@
+{
+  "schema_version": "1.0",
+  "phase": "D",
+  "verdict": "PASS_WITH_SCOPE_LIMITATION",
+  "terminal": "PROCEED_TO_E",
+  "evidence_breadth_verdict": "EB2 LIMITED_BUT_REPORTABLE"
+}

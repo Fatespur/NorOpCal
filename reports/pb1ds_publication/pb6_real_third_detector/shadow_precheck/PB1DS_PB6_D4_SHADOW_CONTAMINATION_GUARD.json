@@ -1,0 +1,38 @@
+{
+  "guards_checked": 6,
+  "mode": "structural data-domain audit",
+  "forbidden_tokens": [
+    "efficientad",
+    "tri_detector",
+    "third_detector",
+    "third detector"
+  ],
+  "contaminated": false,
+  "problems": [],
+  "checks": [
+    {
+      "artifact": "PB1DS_PB6_D4_SHADOW_SELECTOR_OOF.csv",
+      "exists": true
+    },
+    {
+      "artifact": "PB1DS_PB6_D4_SHADOW_REPLAY_OOF.csv",
+      "exists": true
+    },
+    {
+      "artifact": "PB1DS_PB6_D4_SHADOW_ENTITY_REPRODUCTION.csv",
+      "exists": true
+    },
+    {
+      "artifact": "PB1DS_PB6_D4_SHADOW_METRIC_REPRODUCTION.csv",
+      "exists": true
+    },
+    {
+      "artifact": "PB1DS_PB6_D4_SHADOW_MODEL_BINDING.json",
+      "exists": true
+    },
+    {
+      "artifact": "PB1DS_PB6_D4_SHADOW_PROTOCOL_BINDING.json",
+      "exists": true
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "control": "coverage-matched random abstention",
+  "detector": "dinov2_vits14",
+  "K": 8,
+  "actuator": "A_MEDIAN_RAW lambda=0.25",
+  "selection_uses_anomaly_outcome": false,
+  "random_master_seed": 20260820,
+  "seed_ids": [
+    0,
+    999
+  ],
+  "n_seeds": 1000,
+  "selection_unit": "entity-support-repeat",
+  "inference_unit": "entity after averaging support repeats",
+  "n_total_selection_units": 300,
+  "n_selected_per_seed": 121,
+  "matched_coverage": 0.4033333333333333
+}

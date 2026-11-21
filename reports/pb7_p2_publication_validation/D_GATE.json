@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "stage": "PB7_P2_PUBLICATION_READINESS_CONFIRMATORY_VALIDATION",
+  "phase": "D",
+  "timestamp": "2026-08-20T01:32:42Z",
+  "bootstrap": {
+    "B": 10000,
+    "seed": 20260821
+  },
+  "checks": {
+    "dinov2_dba_ci_lo": 0.026969696969696966,
+    "dinov2_dba_ci_lo_gt_0": true,
+    "dinov2_dfnr_mean": 0.002454711111111111,
+    "dinov2_dfnr_ci_hi": 0.004888888888888888,
+    "dinov2_safety_compatible": true,
+    "dinov2_gated_vs_always_on_dfnr_advantage": false
+  },
+  "verdict": "FAIL",
+  "terminal": "PROCEED_TO_E_WITH_UNCERTAINTY_NOT_CONFIRMED"
+}

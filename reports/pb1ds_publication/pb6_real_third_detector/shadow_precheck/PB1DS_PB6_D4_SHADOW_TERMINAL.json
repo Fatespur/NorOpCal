@@ -1,0 +1,57 @@
+{
+  "schema_version": "1.0",
+  "stage": "PB1-DS-PB6-D4-SHADOW-PRECHECK",
+  "terminal": "PB1DS_PB6_D4_SHADOW_PRECHECK_PASS_TWO_DETECTOR_PROTOCOL_EXACTLY_REPRODUCED",
+  "n_entities_reproduced": 234,
+  "action_mismatch": 0,
+  "max_abs_prob_diff": 1.8884893648873913e-13,
+  "max_abs_dba_diff_pp": 3.469446951953614e-15,
+  "gates": {
+    "S1_population_39_78": {
+      "expected": 39,
+      "observed": 39,
+      "pass": true,
+      "detail": "39 outer folds from sealed split manifest"
+    },
+    "S2_fold_split_holdout": {
+      "pass": true,
+      "detail": "held-out unit not read pre-seal"
+    },
+    "S3_feature_semantics_canonical10": {
+      "pass": true,
+      "detail": [
+        "mean_shift",
+        "median_shift",
+        "mad_ratio",
+        "std_ratio",
+        "d_q90",
+        "d_q95",
+        "d_q99",
+        "upper_tail_spread_change",
+        "wasserstein",
+        "ks"
+      ]
+    },
+    "S4_model_family_logistic": {
+      "pass": true,
+      "detail": "LogisticRegression l2 lbfgs balanced; scaler=null"
+    },
+    "S5_action_reproduction": {
+      "n_entities": 234,
+      "action_mismatch": 0,
+      "max_prob_diff": 1.8884893648873913e-13,
+      "pass": true
+    },
+    "S6_downstream_reproduction": {
+      "max_abs_dba_diff_pp": 3.469446951953614e-15,
+      "max_downstream_diff": 5.551115123125783e-17,
+      "pass": true
+    }
+  },
+  "all_gates_pass": true,
+  "pb6_overall_status": "PB1DS_PB6_IN_PROGRESS_BLOCKED_AT_D2_PENDING_REAL_MVTEC_AD2_IMAGES_AND_EFFICIENTAD_WEIGHTS",
+  "d5_authorized": false,
+  "d2_blocked": true,
+  "is_scientific_replication": false,
+  "is_code_path_validation": true
+}

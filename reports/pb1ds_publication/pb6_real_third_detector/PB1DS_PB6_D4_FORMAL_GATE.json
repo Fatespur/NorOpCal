@@ -1,0 +1,57 @@
+{
+  "verdict": "PASS",
+  "checks": [
+    {
+      "rule": "R1_categories_present",
+      "pass": true,
+      "detail": "missing categories: none"
+    },
+    {
+      "rule": "R1_exact_70000_steps_seed0_complete",
+      "pass": true,
+      "detail": "per-category final checkpoint@70000 + .complete + manifest complete/seed0/hash"
+    },
+    {
+      "rule": "R6_no_category_error",
+      "pass": true,
+      "detail": "categories with error: none"
+    },
+    {
+      "rule": "R2_caches_complete",
+      "pass": true,
+      "detail": "per-category score caches present on disk"
+    },
+    {
+      "rule": "R5_d3_gate_pass",
+      "pass": true,
+      "detail": "D3 raw-score integrity audit == PASS"
+    },
+    {
+      "rule": "R5_all_cache_integrity",
+      "pass": true,
+      "detail": "integrity passes 55/55"
+    },
+    {
+      "rule": "R3_teacher_sha256_matches_frozen",
+      "pass": true,
+      "detail": "on_disk=f37072fd47e89c5e827621c5baffa7500819f7896bbacec160b1a16c560e07ec frozen=f37072fd47e89c5e827621c5baffa7500819f7896bbacec160b1a16c560e07ec"
+    },
+    {
+      "rule": "R4_1_config_num_steps_frozen",
+      "pass": true,
+      "detail": "config num_steps=70000"
+    },
+    {
+      "rule": "R4_2_all_seed_zero",
+      "pass": true,
+      "detail": "all manifest rows seed==0"
+    },
+    {
+      "rule": "R4_3_source_normal_training",
+      "pass": true,
+      "detail": "per-category train/good > 0"
+    }
+  ],
+  "d2_complete": true,
+  "d5_authorized": true
+}

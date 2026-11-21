@@ -1,0 +1,14 @@
+# Core runtime dependencies of the migrated NorOpCal reproduction chain.
+# Kept aligned with the parent research environment (requirements/base.txt).
+# Known-good pinned versions used for G2 verification:
+#   _audit/G2_environment_freeze.txt  (ENVIRONMENT_VERSION_UNCERTAIN policy:
+#   preserve ranges; pin locally only if byte-parity matters)
+numpy>=1.26
+pandas>=2.1
+scipy>=1.11
+scikit-learn>=1.4
+matplotlib>=3.8
+PyYAML>=6.0.1
+Pillow>=10.2
+torch>=2.2
+torchvision>=0.17

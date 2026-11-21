@@ -1,0 +1,40 @@
+{
+  "schema_version": "1.0",
+  "stage": "PB7_P0_THRESHOLD_CORRECTABILITY_IDENTIFIABILITY_AUDIT",
+  "phase": "P0",
+  "timestamp": "2026-08-20T00:31:25Z",
+  "hypotheses": {
+    "H1_THRESHOLD_HEADROOM_EXISTS": {
+      "claim": "at least one detector has a non-trivial fraction of units with CORRECTABLE_SAFE = 1",
+      "minimum_continuation": ">= 20% of units OR >= 8 units (at least one satisfied)",
+      "stage": "A"
+    },
+    "H2_DIRECTION_IDENTIFIABILITY": {
+      "claim": "normal-only deformation can predict sign(tau*_SAFE - tau_source) significantly better than a trivial baseline",
+      "stage": "B"
+    },
+    "H3_MAGNITUDE_IDENTIFIABILITY": {
+      "claim": "normal-only deformation has a stable monotonic / regression relation with delta_tau*_SAFE",
+      "stage": "B"
+    },
+    "H4_DETECTOR_DEPENDENCE": {
+      "claim": "different detectors show substantial differences in correctability prevalence, delta_tau* distribution, and the deformation -> threshold relationship",
+      "stage": "A/B"
+    },
+    "H5_FEW_NORMAL_STABILITY": {
+      "claim": "the above information is preserved with sufficient stability at K=8 target-normal support",
+      "stage": "C"
+    },
+    "H6_SAFE_DEPLOYABLE_ACTUATOR_EXISTS": {
+      "claim": "at least one pre-registered simple normal-only threshold rule achieves actual benefit under strict held-out evaluation",
+      "stage": "D/E"
+    }
+  },
+  "trivial_baselines_for_H2": [
+    "B0_ALWAYS_NO_ADAPT",
+    "B1_ALWAYS_RAISE_THRESHOLD",
+    "B2_ALWAYS_LOWER_THRESHOLD",
+    "B3_DETECTOR_ONLY_PRIOR",
+    "B4_SINGLE_NORMAL_ONLY_SCALAR"
+  ]
+}

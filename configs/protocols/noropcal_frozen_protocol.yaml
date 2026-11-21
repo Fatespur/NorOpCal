@@ -1,0 +1,67 @@
+# NorOpCal frozen protocol record (DECLARATIVE ONLY)
+#
+# This file is a human-readable mirror of the sealed specification for
+# documentation and review convenience. It is NOT an execution input: the
+# authoritative values live in the code and in the sealed artifacts:
+#   - tools/pb7_p1_safety_actuator/pb7_p1_common.py   (implementation constants)
+#   - reports/pb7_p1_safety_actuator/E_FROZEN_METHOD_SPEC.json (sealed spec)
+# Any conflict is resolved by those sources; do not edit values here.
+
+schema_version: "1.0"
+status: FROZEN
+sealed_spec: reports/pb7_p1_safety_actuator/E_FROZEN_METHOD_SPEC.json
+
+method:
+  name: NorOpCal
+  expansion: Normal-Only Selective Operating-Point Calibration
+  principal_candidate:
+    family: A_MEDIAN_RAW
+    lambda: 0.25
+    cutoff_key: Q50
+    cutoff_value: 0.015890181064605713
+    gate: adapt iff median_shift >= cutoff_value else NoAdapt
+    bounding: tau_used = tau_source + lambda * (tau_raw - tau_source)
+
+support_sizes:
+  principal_k: "8"
+  auxiliary: ["4", "FULL"]
+  k_repeats_entity_level: 30          # frozen per-entity repeats
+  k_support_robustness_repeats: 200   # PB7-P2 confirmatory repeats
+  k8_eligibility_min_full_n: 8
+  sampling_rule: NESTED               # S4 subset S8 subset SFULL
+
+operating_point:
+  source_threshold_quantile: 0.95
+  decision_rule: anomaly iff score > tau (strict)
+
+benefit_and_safety:
+  benefit_delta_ba_min: 0.02
+  benefit_delta_fpr_max: -0.05
+  benefit_delta_fnr_max: 0.02
+  safety_budget_mean_delta_fnr: 0.02  # preregistered +2 pp budget
+  harmful_delta_ba_lt: -0.02
+  harmful_delta_fnr_gt: 0.02
+  catastrophic_delta_fnr_gt: 0.05
+
+dev_test_split:
+  salt: PB7_P1_DEV_TEST_SPLIT_v1
+  rule: SHA256 parity of category name (split_side)
+  dev_categories: [can, fruit_jelly, wallplugs]
+  test_categories: [fabric, rice, sheet_metal, vial, walnuts]
+
+statistics:
+  bootstrap: category_aware_block
+  bootstrap_iterations_authoritative: 10000   # PB7-P2 reuse
+  bootstrap_iterations_pb7p1: 5000            # original E-stage CI
+  confidence_level: 0.95
+  random_abstention_control_seeds: 1000
+  report_hierarchy: DINOv2_principal_before_pooled
+
+detectors:
+  dinov2_vits14: {role: principal}
+  wide_resnet50_2: {role: mechanism_control, name: PatchCore}
+  efficientad:
+    role: mechanism_control
+    training_steps: 70000
+    seed: 0
+    provenance: reports/pb1ds_publication/pb6_real_third_detector/PB1DS_PB6_EFFICIENTAD_WEIGHT_PROVENANCE.json

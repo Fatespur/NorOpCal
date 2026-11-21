@@ -1,0 +1,56 @@
+{
+  "schema_version": "1.0",
+  "stage": "PB7_P0_THRESHOLD_CORRECTABILITY_IDENTIFIABILITY_AUDIT",
+  "phase": "D",
+  "timestamp": "2026-08-20T00:45:00Z",
+  "candidates": {
+    "T0_NO_ADAPT": {
+      "name": "NoAdapt",
+      "rule": "tau_t = tau_source",
+      "role": "mandatory baseline",
+      "frozen": true
+    },
+    "T1_QUANTILE_OFFSET": {
+      "name": "Quantile Offset Threshold",
+      "rule": "tau_t = tau_source + (Q95(target-normal) - Q95(source-normal))",
+      "q": 0.95,
+      "note": "q frozen at 0.95 (matches the source operating-threshold semantics Q95)",
+      "frozen": true
+    },
+    "T2_ROBUST_LOCATION_SCALE": {
+      "name": "Robust Location-Scale Threshold",
+      "rule": "tau_t = median_t + (MAD_t / MAD_s) * (tau_source - median_s)",
+      "mad_guard": "if MAD_s <= 1e-12: ratio = 1.0 (no scale correction)",
+      "frozen": true
+    },
+    "T3_TAIL_EXCEEDANCE": {
+      "name": "Tail Exceedance Correction",
+      "rule": "alpha_s = P_source-normal(score > tau_source) = 1 - Q95 = 0.05; tau_t = Q_(1-alpha_s)(target-normal) = Q95(target-normal)",
+      "note": "mathematically identical to T1 given tau_source = Q95(source-normal); registered separately per protocol, evaluated as the same effective rule",
+      "frozen": true
+    },
+    "T4_ABSTAINING": {
+      "name": "Abstaining Threshold Correction",
+      "rule": "if T3_feature > delta: apply T3 actuator (tau_t = Q95(target-normal)); else NoAdapt (tau_t = tau_source)",
+      "gate_feature": "T3_feature = P_target-normal(score > tau_source) (target exceedance at source threshold)",
+      "delta": 0.10,
+      "delta_definition": "analytically defined as 2x the source-normal nominal exceedance (2 * (1 - Q95) = 2 * 0.05); pre-registered, no test-outcome tuning",
+      "authorization": "B stage proved a stable normal-only scalar (T3_feature) vs correctability relationship (AUC 0.685, PASS-B); low-capacity single-scalar gate",
+      "frozen": true
+    }
+  },
+  "evaluation_contract": {
+    "detection_rule": "score > tau (strict), matching md0sr_common.detection_metrics",
+    "benefit_definition": "delta_ba >= +0.02 AND delta_fpr <= -0.05 AND delta_fnr <= +0.02",
+    "harm_definition": "delta_ba < -0.02 OR delta_fnr > +0.02",
+    "catastrophic_harm_definition": "delta_fnr > +0.05",
+    "coverage": "fraction of entities where the actuator applies a non-NoAdapt correction",
+    "abstention_rate": "1 - coverage",
+    "no_parameter_fitting": "all candidates are parameter-free pre-registered formulas; T4 delta is a fixed pre-registered constant, so direct evaluation on all 117 entities is a strict OOF evaluation (each entity's target scores are never used for fitting any candidate)"
+  },
+  "firewall": {
+    "deployable_inputs": ["source-normal scores", "target-normal scores", "detector identity", "category identity"],
+    "oracle_only": ["target anomaly scores", "BA/FPR/FNR outcomes", "oracle thresholds"],
+    "note": "actuator thresholds are computed from DEPLOYABLE inputs only; anomaly scores are used ONLY for the final evaluation metrics"
+  }
+}
