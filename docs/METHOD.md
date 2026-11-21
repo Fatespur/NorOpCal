@@ -7,24 +7,33 @@ without requiring target anomalies, labels, pixel masks, or fine-tuning the dete
 
 > [!NOTE]
 > **公开版本与科研资产说明 (Public Release Notice)**  
-> 历史研究全量工程中的内部参考记录（如 `docs/reference/PUBLICATION_GROUND_TRUTH.md`）以及内部重放脚本（如 `tools/pb7_p1_safety_actuator/pb7_p1_common.py`、`tools/pb7_p0_threshold_correctability/pb7_p0_common.py`）属于内部科研冻结资产，**未随精简开源发布包分发**。  
-> 本开源仓库通过 `src/noropcal` 提供了核心算法的完全自包含实现，并内嵌了权威冻结参数规范（可通过 `noropcal.load_frozen_spec()` 加载验证）。
+> 历史研究全量工程中的内部参考记录（如 `docs/reference/PUBLICATION_GROUND_TRUTH.md`）以及内部重放脚本（如 `tools/pb7_p1_safety_actuator/pb7_p1_common.py`）属于内部科研封闭存档，**未随精简开源发布包分发**。  
+> 本开源仓库通过 `src/noropcal` 提供了核心算法的完全自包含实现，并内嵌了权威冻结参数规范（可通过 `noropcal.load_frozen_spec()` 载入）。
 
 ---
 
-## Deployment Information Set
+## 科研复现层级与资产边界
 
-NorOpCal 严格遵循工业在线低开销部署约束，其可用信息集仅为：
+为维护学术严谨性，本项目明确区分三类复现范畴：
+
+1. **Level 1：核心算法与 API 复现（独立运行）**  
+   依托本仓库自包含代码，通过 `python -m pytest -v tests/` 验证核心类 `NorOpCal`、冻结超参数载入以及边界异常拦截。
+2. **Level 2：原理机制与合成验证（独立运行）**  
+   依托 `scripts/demo.py` 与 `assets/figures/generate_all_figures.py`，在合成高斯分布下验证中位数感知、有界收缩与门控弃权机制。
+3. **Level 3：论文全量实验复现（依赖外部资产）**  
+   涉及 MVTec AD 2 原始高分辨率图像、DINOv2/PatchCore/EfficientAD 的全量特征抽取与重算。由于数据属于受控资产，本仓库未包含全部原始数据与权重，通过 Level 1/2 不等同于直接完成 Level 3 复现。
+
+---
+
+## 形式化数学定义与操作流程
+
+工业在线部署的信息集严格限定为：
 $$(\tau_s, S_s^N, S_t^N)$$
 - $\tau_s$：源域标定的静态决策阈值
 - $S_s^N$：源域正常样本异常得分集合
 - $S_t^N$：目标域仅有的 $K$ 张已知正常样本异常得分（支持集，$K \approx 8$）
 
-系统不使用任何目标域缺陷样本、像素掩码、先验分布或在线测试反馈。
-
----
-
-## Frozen Policy Specification (权威冻结规范)
+### 三阶段校准流程
 
 1. **分布漂移感知 (Median-Shift Sensing)**：  
    $$m_s = \text{median}(S_s^N), \quad m_t = \text{median}(S_t^N), \quad \Delta m = m_t - m_s$$
@@ -35,46 +44,40 @@ $$(\tau_s, S_s^N, S_t^N)$$
 3. **保守有界执行器 (Conservative Bounded Actuator)**：  
    门控通过后，实施受约束的有界收缩平移：
    $$\tau_t = \tau_s + \lambda \cdot \Delta m \quad (\text{冻结收缩系数 } \lambda = 0.25)$$
-4. **安全保护理念**：  
-   在微弱漂移或无漂移工况下，门控主动拦截并保持源域阈值是精心设计的安全保障行为，可有效防止过度调整带来的负迁移（Negative Transfer）。
 
 ---
 
-## What NorOpCal is NOT
+## 数学保证 vs. 统计假设 vs. 实测现象
 
-- **不是领域自适应 (Domain Adaptation)**：不微调特征提取主干，不改变特征空间。
-- **不是检测器重训练**：主干权重、记忆库与异常打分函数完全冻结。
-- **不改变排序性能**：阈值平移属于单调后处理，不改变测试样本的相对排名，因此受试者工作特征曲线下面积（AUROC/AUPR）在数学上严格保持不变。
+为避免机理归因泛化与夸大，特别强调以下三层区别：
 
----
+| 范畴 | 内容 | 边界与严谨表述 |
+| :--- | :--- | :--- |
+| **数学保证 (Mathematical Invariant)** | 单调阈值平移 | 阈值调整仅改变样本的正负判决界限，样本间的相对异常排序严格保持不变，因此受试者工作特征曲线下面积（AUROC）在数学上严格守恒。 |
+| **统计设计 (Statistical Policy)** | 安全预算约束 | 预注册设计要求 $\mathbb{E}[\Delta FNR] \le +0.02$。该约束属于**指定测试总体上的平均 FNR 退化预算**，**不构成对单个工况单元或单个孤立样本的个体安全保证**。 |
+| **实测现象与假说 (Observation & Hypothesis)** | 检测器适用性差异 | 实测现象表明校准有效性强依赖于主干架构；机制解释属于学术假设，不代表确定性因果证明（见下表）。 |
 
-## Detector Scope & Scientific Findings (检测器适用边界)
+### 检测器适用性：实测现象 vs. 机制假设
 
-根据论文正式冻结评测，阈值自适应校准的有效性**强依赖于底层特征空间的几何与漂移特性**，并非所有模型普遍有效：
-
-| 检测器主干 (Detector) | 评测角色 (Role) | 科学评测结论 (Verdict) | 详细原因 |
-|---|---|---|---|
-| **DINOv2** (`dinov2_vits14`) | 核心主评测主干 | **USEFUL_SAFE_SELECTABLE** | 特征分布呈现刚性平移，门控与有界收缩协同生效，取得确定性正向收益 |
-| **PatchCore** (`wide_resnet50_2`) | 机制对照主干 | **ACTUATOR_MISMATCH** | 特征空间漂移非刚性，单纯中位数平移产生动作器失配 |
-| **EfficientAD** (70,000 steps) | 机制对照主干 | **NO_HEADROOM** | 基线模型本身在目标工况下无显著阈值调整余量 |
-
-> [!WARNING]
-> 正向校准收益属于**特定检测器与特征空间下的实证发现**，绝不能作为跨检测器普适的通用声明。
+| 检测器主干 (Detector) | 评测角色 | 判定结论 (Verdict) | 实测现象 (Observation) | 机制假设 (Hypothesis) |
+|---|---|---|---|---|
+| **DINOv2** (`dinov2_vits14`) | 核心主干 | **USEFUL_SAFE_SELECTABLE** | 在 10 个测试单元获得 +3.23 pp 显著净增益，危害率受控在 3.67%。 | 推测其深层自监督特征空间在成像漂移下表现出近似刚性平移，标量中位数对齐有效。 |
+| **PatchCore** (`wide_resnet50_2`) | 机制对照 | **ACTUATOR_MISMATCH** | 阈值平移导致漏检或误报剧烈波动，表现出机制失配。 | 推测记忆库最近邻检索受局部邻域非各向同性形变影响，简单的标量平移无法匹配真实分界面。 |
+| **EfficientAD** (70,000 steps) | 机制对照 | **NO_HEADROOM** | 目标域下基线模型无可调增益空间。 | 推测学生-教师网络在该工况下的预测残差分布具有特有收敛特性，阈值调节无增益空间。 |
 
 ---
 
-## Principal Result (核心实证结论)
+## 核心消融实证与机制归因
 
-在 DINOv2 主干网络、$K=8$ 目标域正常样本支持集、**10 个符合条件的 TEST 评估单元**（fabric 5 个工况 + walnuts 5 个工况）上的冻结评测数据为：
-- 平衡准确率净增益 ($\Delta\text{BA}$)：**+3.23 pp**（类别感知 Block-Bootstrap 95% 置信区间 $[+2.70, +3.76]\text{ pp}$）
-- 漏检率增量 ($\Delta\text{FNR}$)：**+0.24 pp**（严格控制在预注册 $+2.0\text{ pp}$ 安全预算内）
-- 决策危害率 (Harm Rate)：**3.67%**（相比无门控的 42.1% 得到显著压制）
-- 策略覆盖率 (Coverage)：**40.33%**
+在 DINOv2 主干网络、$K=8$ 正常支持集、10 个符合条件的 TEST 单元上的正式消融结果：
 
----
+| 策略方案 (Policy) | $\Delta$ 平衡准确率 (BA, pp) | $\Delta$ 漏检率 (FNR, pp) | 危害率 (Harm Rate, %) | 覆盖率 (Coverage, %) |
+|---|---|---|---|---|
+| **不校准 (NoAdapt, $\tau_s$)** | 0.00 (基准; BA 0.5411) | 0.00 | 0.00 | 0.00 |
+| **仅门控机制 ($\lambda=1.0$, Q50)** | +4.25 [+3.96, +4.55] | +7.49 | 37.67 | 40.33 |
+| **仅有界收缩 ($\lambda=0.25$, 无门控)** | +3.64 [+3.52, +3.76] | −0.16 | 3.67 | 100.00 |
+| **NorOpCal 全策略 ($\lambda=0.25$, Q50)** | **+3.23 [+2.70, +3.76]** | **+0.24** | **3.67** | **40.33** |
 
-## Known Scientific Limitations
-
-1. **残余危害集中性**：残余的 3.67% 决策恶化主要集中在源域初始 FNR 偏高的个别 walnuts 工况单元；算法不允许引入任何后验品类补丁规则。
-2. **样本量资格门槛**：$K=8$ 要求目标域具备至少 8 张独立的正常品图像；在 MVTec AD 2 的 26 个 TEST 单元中，仅有 10 个单元满足此条件，其余 16 个单元存在真实的数据量短缺。
-3. **外部数据集诚实弃权**：在外部数据集（如 AeBAD-S）上，由于工况极端偏移导致门控退化为全触发，研究明确记录了诚实放弃（Abstention），不宣称外部泛化。
+### 机制归因关键结论：
+1. **有界收缩是控制决策危害率的核心**：将激进更新（$\lambda=1.0$）高达 37.67% 的危害率大幅压制到 3.67%（降低 34 个百分点）。
+2. **门控机制并未进一步降低危害率**：仅有界收缩与全策略的危害率均为 3.67%。门控的核心价值在于**选择性触发（40.33% 覆盖率）与弃权保护**，避免在微弱漂移工况下无效扰动决策阈值，并将平均漏检率控制在预注册安全预算内。

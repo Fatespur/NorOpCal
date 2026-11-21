@@ -28,7 +28,22 @@ NorOpCal formulates threshold adaptation as a principled, three-stage pipeline:
 3. **Conservative Bounded Actuator**: On gate pass, apply bounded shrinkage update:
    $$\tau_t = \tau_s + \lambda \cdot \Delta m \quad (\text{with frozen } \lambda = 0.25)$$
 
-> **Core Philosophy**: The detector representation, memory bank, and ranking order remain completely frozen. **Abstention is an intentional safety guarantee, not an algorithmic failure.**
+> **Core Philosophy**: The detector representation, memory bank, and ranking order remain mathematically frozen. **Abstention is an intentional safety guarantee, not an algorithmic failure.**
+
+---
+
+## Reproduction Levels & Asset Scope
+
+To maintain rigorous scientific standards, this repository defines three distinct levels of reproduction:
+
+| Level | Scope | Commands | External Assets Required |
+| :--- | :--- | :--- | :--- |
+| **Level 1: Core Algorithm & API** | Self-contained library `src/noropcal`, sealed protocol specification `load_frozen_spec()`, and full unit tests. | `python -m pytest -v tests/` | **No** (Fully self-contained, tested in CI) |
+| **Level 2: Principle Demo & Synthetic Validation** | Interactive demonstration under synthetic shifts and 5 diagnostic figure generation scripts. | `python scripts/demo.py`<br>`python assets/figures/generate_all_figures.py` | **No** (Tested in CI) |
+| **Level 3: Full Paper Experiment Reproduction** | All 39 acquisition units across MVTec AD 2, raw image feature extraction, and multi-backbone re-runs. | Legacy execution pipeline | **Yes** (Requires hundreds of GBs of raw MVTec AD 2 images and pre-trained weights) |
+
+> [!IMPORTANT]
+> Passing Level 1 and Level 2 tests in this repository **does not imply that Level 3 full paper experiments are directly reproduced here**. Third-party researchers reproducing Level 3 must obtain the proprietary raw datasets according to official licenses.
 
 ---
 
@@ -43,7 +58,7 @@ cd NorOpCal
 # Create virtual environment (optional)
 python -m venv .venv && source .venv/bin/activate  # Windows: .venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-pip install -e .
+pip install -e ".[dev]"
 ```
 
 ### 2. Python API
@@ -73,7 +88,7 @@ python scripts/demo.py
 ### 4. Run Unit Tests
 
 ```bash
-pytest tests/
+python -m pytest -v tests/
 ```
 
 ---
@@ -87,65 +102,37 @@ According to the authoritative frozen research evaluation, NorOpCal's performanc
 | Policy | $\Delta$ Balanced Accuracy (pp) | $\Delta$ FNR (pp) | Harm Rate (%) | Coverage (%) |
 |---|---|---|---|---|
 | **NoAdapt ($\tau_s$)** | 0.00 (ref; BA 0.5411) | 0.00 | 0.00 | 0.00 |
-| **Bounded-only ($\lambda=0.25$, no gate)** | +3.64 [+3.52, +3.76] | −0.16 | 3.67 | 100.00 |
 | **Gate-only ($\lambda=1.0$, Q50)** | +4.25 [+3.96, +4.55] | +7.49 | 37.67 | 40.33 |
+| **Bounded-only ($\lambda=0.25$, no gate)** | +3.64 [+3.52, +3.76] | −0.16 | 3.67 | 100.00 |
 | **NorOpCal ($\lambda=0.25$, Q50)** | **+3.23 [+2.70, +3.76]** | **+0.24** | **3.67** | **40.33** |
 
-*Note: Intervals are category-aware Block-Bootstrap (B=10,000) 95% CI. The mean $\Delta\text{FNR}$ is strictly within the preregistered $+2.0\text{ pp}$ safety budget.*
+*Note: Intervals are category-aware Block-Bootstrap (B=10,000) 95% CI. The preregistered safety constraint $\mathbb{E}[\Delta FNR] \le +0.02$ represents an **aggregate expected budget across the designated test distribution**, not an individual deterministic safety guarantee for every isolated sample.*
 
-### 2. Detector Applicability Scope
+### 2. Empirical Observations vs. Hypothesized Mechanisms
 
-Threshold adaptation depends heavily on the geometry and shift structure of the underlying feature representations:
+Threshold adaptation depends heavily on the geometry and shift structure of feature representations:
 
-| Detector | Role | Verdict | Scientific Rationale |
-|---|---|---|---|
-| **DINOv2** (`dinov2_vits14`) | Principal | **USEFUL_SAFE_SELECTABLE** | Feature distributions exhibit rigid translation under shift; scalar median shift enables robust threshold alignment (+3.23 pp). |
-| **PatchCore** (`wide_resnet50_2`) | Mechanism Control | **ACTUATOR_MISMATCH** | Anisotropic neighborhood drift leads to mechanism mismatch with scalar translation. |
-| **EfficientAD** (70k steps) | Mechanism Control | **NO_HEADROOM** | Architecture provides negligible recalibration headroom under targeted shifts. |
-
-### 3. Dataset & Few-Shot Eligibility
-
-- **Benchmark**: MVTec AD 2 consists of 8 categories (`can`, `fabric`, `fruit_jelly`, `rice`, `sheet_metal`, `vial`, `wallplugs`, `walnuts`) across 39 units (13 DEV units, 26 TEST units).
-- **$K=8$ Census**: $K=8$ adaptation strictly requires $\ge 8$ independent normal images in the target domain. Among the 26 TEST units, only `fabric` (5 units) and `walnuts` (5 units) qualify (10 units total). The remaining 16 units exhibit genuine sample scarcity.
+- **DINOv2 (`dinov2_vits14`)**:
+  - *Observation*: Evaluated as **USEFUL_SAFE_SELECTABLE** with +3.23 pp net gain.
+  - *Hypothesis*: Deep self-supervised representations exhibit approximate rigid translation under acquisition shift, enabling effective alignment via scalar median shift.
+- **PatchCore (`wide_resnet50_2`)**:
+  - *Observation*: Evaluated as **ACTUATOR_MISMATCH** due to significant performance oscillations.
+  - *Hypothesis*: Nearest-neighbor distances on memory banks are sensitive to anisotropic local distortions, rendering scalar translation ill-suited.
+- **EfficientAD (70k steps)**:
+  - *Observation*: Evaluated as **NO_HEADROOM** with negligible gains.
+  - *Hypothesis*: Student-teacher distillation residuals converge to specific distributional characteristics under target shifts, leaving minimal recalibration headroom.
 
 ---
 
-## Conceptual & Diagnostic Visualizations
+## Diagnostic & Conceptual Visualizations
 
-| Policy Ablation Trade-off (DINOv2) | Safety Gate Ablation & Harm Suppression |
+| Policy Ablation Trade-off (Natural Continuous Coordinates) | Mechanism Attribution: Bounding vs. Gating |
 |:---:|:---:|
-| ![Fig 2 Ablation Trade-off](assets/figures/Fig2_帕累托风险增益前沿.png) | ![Fig 4 Safety Ablation](assets/figures/Fig4_安全门控消融与危害率压制.png) |
+| ![Fig 2 Ablation Trade-off](assets/figures/Fig2_帕累托风险增益前沿.png) | ![Fig 4 Mechanism Attribution](assets/figures/Fig4_安全门控消融与危害率压制.png) |
 
-| Decision Boundary Shift [Conceptual Schematic] |
-|:---:|
-| ![Fig 5 Conceptual Landscape](assets/figures/Fig5_决策边界与工况漂移对比.png) |
-
-> *Note: Fig 2 and Fig 4 report frozen empirical evaluations on DINOv2 across 10 TEST units. Fig 5 is a conceptual schematic with synthetic distributions (hyperbolic claims of "100% detection / 0% false alarm" removed). Previously ungrounded multi-backbone curves have been retracted.*
-
----
-
-## Repository Structure
-
-```text
-NorOpCal/
-├── .github/
-│   └── workflows/ci.yml  # Automated CI workflow
-├── assets/
-│   └── figures/          # Architecture and conceptual schematics
-├── configs/              # Detector and protocol configurations
-├── docs/                 # Documentation and protocols
-│   ├── METHOD.md         # Mathematical derivation and scope
-│   ├── DATASETS.md       # Dataset layout and eligibility
-│   └── KNOWN_ISSUES.md   # Scientific boundaries
-├── scripts/
-│   └── demo.py           # Quickstart interactive demo
-├── src/
-│   ├── noropcal/         # Core self-contained calibration library
-│   └── shiftad/          # Detector adapters and support modules
-├── tests/                # Automated unit test suite (pytest)
-├── pyproject.toml        # Packaging configuration
-└── requirements.txt      # Dependencies
-```
+| Asymptotic Standard Error & Mechanism Status Cards | Decision Boundary Calibration [Synthetic Schematic] |
+|:---:|:---:|
+| ![Fig 3 Mechanism Status](assets/figures/Fig3_样本效率与骨干迁移性.png) | ![Fig 5 Synthetic Schematic](assets/figures/Fig5_决策边界与工况漂移对比.png) |
 
 ---
 
