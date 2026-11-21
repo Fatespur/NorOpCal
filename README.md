@@ -15,7 +15,7 @@ NorOpCal 是一种轻量且即插即用的决策校准框架。针对工业无�
 
 整个过程**无需目标域异常样本、无需人工标签、无需像素级掩码，且完全无需微调或重新训练检测器主干网络**。
 
-![NorOpCal 框架总览](assets/figures/Fig1_Framework.png)
+![NorOpCal 框架总览](assets/figures/Fig1_系统框架图.png)
 
 ---
 
@@ -96,11 +96,19 @@ pytest tests/
 | **仅门控机制 ($\lambda=1.0$, Q50)** | +4.25 [+3.96, +4.55] | +7.49 | 37.67 | 40.33 |
 | **NorOpCal 全策略 ($\lambda=0.25$, Q50)** | **+3.23 [+2.70, +3.76]** | **+0.24** | **3.67** | **40.33** |
 
-### 核心诊断可视化
+### 核心诊断与效果可视化
 
-| 门控有效性与安全性诊断 | 不同样本量 ($K$) 支撑集效用分析 |
-|---|---|
-| ![Fig 2](assets/figures/Fig2_Gate_Informativeness_and_Correctability_Diagnostic.png) | ![Fig 3](assets/figures/Fig3_Utility_Across_Frozen_Support_Settings.png) |
+| 帕累托运作风险-安全增益前沿 | 8大工业品类全景鲁棒适应雷达 |
+|:---:|:---:|
+| ![Fig 2 帕累托风险增益前沿](assets/figures/Fig2_帕累托风险增益前沿.png) | ![Fig 6 工业品类全景雷达图](assets/figures/Fig6_工业品类全景雷达图.png) |
+
+| 决策边界移动与概率密度态势 (Before vs After) |
+|:---:|
+| ![Fig 5 决策边界与工况漂移对比](assets/figures/Fig5_决策边界与工况漂移对比.png) |
+
+| K=8 小样本收敛与多骨干迁移性 | 安全门控机制逐级消融与危害率压制 |
+|:---:|:---:|
+| ![Fig 3 样本效率与骨干迁移性](assets/figures/Fig3_样本效率与骨干迁移性.png) | ![Fig 4 安全门控消融与危害率压制](assets/figures/Fig4_安全门控消融与危害率压制.png) |
 
 ---
 

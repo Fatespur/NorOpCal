@@ -12,7 +12,7 @@
 
 NorOpCal selectively and conservatively recalibrates the **operating point** (the decision threshold) of a **frozen** industrial anomaly detector under **acquisition shift**, using only a handful of **known-normal target observations** ($K \approx 8$) — without target anomalies, labels, pixel masks, or fine-tuning the detector backbone.
 
-![NorOpCal Framework](assets/figures/Fig1_Framework.png)
+![NorOpCal Framework](assets/figures/Fig1_系统框架图.png)
 
 ---
 
@@ -90,9 +90,17 @@ Evaluated across MVTec AD 2 acquisition shift benchmarks with DINOv2, PatchCore,
 
 ### Key Diagnostic Visualizations
 
-| Gate Informativeness & Safety | Multi-Support Utility ($K$) |
-|---|---|
-| ![Fig 2](assets/figures/Fig2_Gate_Informativeness_and_Correctability_Diagnostic.png) | ![Fig 3](assets/figures/Fig3_Utility_Across_Frozen_Support_Settings.png) |
+| Pareto Operational Risk-Gain Frontier | 8-Category Adaptation Polar Radar |
+|:---:|:---:|
+| ![Fig 2 Pareto Risk-Gain Frontier](assets/figures/Fig2_帕累托风险增益前沿.png) | ![Fig 6 Category Polar Radar](assets/figures/Fig6_工业品类全景雷达图.png) |
+
+| Decision Boundary Shift & Probability Density Landscape (Before vs After) |
+|:---:|
+| ![Fig 5 Decision Landscape](assets/figures/Fig5_决策边界与工况漂移对比.png) |
+
+| K=8 Sample Convergence & Backbone Scalability | Safety Gate Stepwise Ablation & Harm Rate Suppression |
+|:---:|:---:|
+| ![Fig 3 Sample Efficiency](assets/figures/Fig3_样本效率与骨干迁移性.png) | ![Fig 4 Gate Ablation](assets/figures/Fig4_安全门控消融与危害率压制.png) |
 
 ---
 
