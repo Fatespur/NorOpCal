@@ -39,7 +39,7 @@ To maintain rigorous scientific standards, this repository defines three distinc
 | Level | Scope | Commands | External Assets Required |
 | :--- | :--- | :--- | :--- |
 | **Level 1: Core Algorithm & API** | Self-contained library `src/noropcal`, sealed protocol specification `load_frozen_spec()`, and full unit tests. | `python -m pytest -v tests/` | **No** (Fully self-contained, tested in CI) |
-| **Level 2: Principle Demo & Synthetic Validation** | Interactive demonstration under synthetic shifts and 5 diagnostic figure generation scripts. | `python scripts/demo.py`<br>`python assets/figures/generate_all_figures.py` | **No** (Tested in CI) |
+| **Level 2: Principle Demo & Synthetic Validation** | Interactive demonstration under synthetic shifts and generation of 4 diagnostic figures (Fig 2–5, alongside the existing Fig 1 architecture diagram). | `python scripts/demo.py`<br>`python assets/figures/generate_all_figures.py` | **No** (Tested in CI) |
 | **Level 3: Full Paper Experiment Reproduction** | All 39 acquisition units across MVTec AD 2, raw image feature extraction, and multi-backbone re-runs. | Legacy execution pipeline | **Yes** (Requires hundreds of GBs of raw MVTec AD 2 images and pre-trained weights) |
 
 > [!IMPORTANT]

@@ -46,7 +46,7 @@ NorOpCal 将该问题形式化为**仅基于正常样本的操作点安全校准
 | 复现层级 | 包含内容 | 运行命令 | 是否依赖外部资产 |
 | :--- | :--- | :--- | :--- |
 | **Level 1：核心算法与 API** | 核心自包含算法库 `src/noropcal`、权威冻结规范 `load_frozen_spec()` 及全套自动化单元测试。 | `pytest tests/` | **否**（完全自包含，已纳入 CI） |
-| **Level 2：原理演示与合成验证** | 合成工况漂移下的端到端快速上手演示与 5 张学术概念诊断图表生成。 | `python scripts/demo.py`<br>`python assets/figures/generate_all_figures.py` | **否**（开箱即用，已纳入 CI） |
+| **Level 2：原理演示与合成验证** | 合成工况漂移下的端到端快速上手演示与 4 张学术概念诊断图表生成（Fig 2–5，另有既存架构图 Fig 1）。 | `python scripts/demo.py`<br>`python assets/figures/generate_all_figures.py` | **否**（开箱即用，已纳入 CI） |
 | **Level 3：论文全量实验复现** | 论文涉及的全部 39 个工况单元、完整高分辨率工业图像特征抽取与跨模型重跑。 | 依赖历史全量重跑流水线 | **是**（需自备数百 GB 的 MVTec AD 2 原始图像与各模型 Checkpoint 权重） |
 
 > [!IMPORTANT]

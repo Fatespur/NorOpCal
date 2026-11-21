@@ -1,7 +1,7 @@
 """NorOpCal Figure Generation Suite.
 
-Generates core publication-grade and diagnostic figures:
-- Fig1_系统框架图.png (Framework diagram)
+Generates 4 publication-grade diagnostic and conceptual figures (Fig 2–5):
+(Note: Fig1_系统框架图.png is the authentic author static framework diagram)
 - Fig2_帕累托风险增益前沿.png (Authentic continuous-scale ablation trade-off on DINOv2)
 - Fig3_样本效率与骨干迁移性.png (Conceptual SE decay & detector feasibility classification)
 - Fig4_安全门控消融与危害率压制.png (Controlled mechanism attribution between Bounding and Gating)
@@ -47,7 +47,7 @@ def generate_fig2():
 
     # Authentic frozen ablation points on DINOv2 (K=8, 10 TEST units: fabric + walnuts)
     methods = [
-        {"name": "不校准基线 (NoAdapt, 冻结阈值)\n[ΔBA=0.00, Harm=0.00%]", "x": 0.0, "y": 0.0, "color": "#64748B", "marker": "s", "size": 110, "text_xy": (0.0, -0.35), "ha": "center"},
+        {"name": "不校准基线 (NoAdapt, 冻结阈值)\n[ΔBA=0.00, Harm=0.00%]", "x": 0.0, "y": 0.0, "color": "#64748B", "marker": "s", "size": 110, "text_xy": (1.2, 0.4), "ha": "left", "arrow": True},
         {"name": "仅有界收缩 (λ=0.25, 无门控)\n[ΔBA=+3.64, Harm=3.67%, 覆盖率=100%]", "x": 3.67, "y": 3.64, "color": "#0284C7", "marker": "^", "size": 130, "text_xy": (4.5, 3.9), "ha": "left"},
         {"name": "仅门控机制 (λ=1.0, 激进更新)\n[运作危害率高达 37.67%, 风险过大]", "x": 37.67, "y": 4.25, "color": "#D97706", "marker": "d", "size": 130, "text_xy": (36.5, 3.8), "ha": "right"},
         {"name": "NorOpCal 全策略\n[Q50门控 + λ=0.25有界收缩]\n[ΔBA=+3.23, Harm=3.67%, 覆盖率=40.3%]", "x": 3.67, "y": 3.23, "color": "#059669", "marker": "o", "size": 170, "text_xy": (4.5, 2.7), "ha": "left", "highlight": True}
@@ -62,6 +62,11 @@ def generate_fig2():
                         fontsize=9.5, fontweight='bold', color='#065F46', ha=m["ha"],
                         bbox=dict(boxstyle="round,pad=0.45", fc="#D1FAE5", ec="#10B981", lw=1.5),
                         arrowprops=dict(arrowstyle="->", color='#059669', lw=1.8), zorder=6)
+        elif m.get("arrow"):
+            ax.annotate(m["name"], xy=(m["x"], m["y"]), xytext=m["text_xy"],
+                        fontsize=9.0, fontweight='bold', color='#1E293B', ha=m["ha"],
+                        bbox=dict(boxstyle="round,pad=0.3", fc="#F8FAFC", ec="#94A3B8", lw=1.0),
+                        arrowprops=dict(arrowstyle="->", color='#64748B', lw=1.3), zorder=6)
         elif m["x"] > 20:
             ax.annotate(m["name"], xy=(m["x"], m["y"]), xytext=m["text_xy"],
                         fontsize=9.2, fontweight='bold', color='#B45309', ha=m["ha"],
@@ -142,12 +147,14 @@ def generate_fig3():
         rect = patches.FancyBboxPatch((0.2, y_top - card_h), 9.6, card_h,
                                       boxstyle="round,pad=0.15", ec=c["border"], fc=c["bg"], lw=1.5)
         ax2.add_patch(rect)
-        ax2.text(0.5, y_top - 0.55, f"{c['detector']}  |  {c['role']}", fontsize=9.8, fontweight='bold', color="#0F172A")
-        badge = patches.FancyBboxPatch((6.6, y_top - 0.75), 3.0, 0.55,
+        # Separate detector name and role vertically so they never collide with the badge
+        ax2.text(0.5, y_top - 0.52, c['detector'], fontsize=9.8, fontweight='bold', color="#0F172A")
+        ax2.text(0.5, y_top - 0.90, f"角色定位：{c['role']}", fontsize=8.4, color="#475569", fontweight='bold')
+        badge = patches.FancyBboxPatch((6.6, y_top - 0.72), 3.0, 0.52,
                                        boxstyle="round,pad=0.08", ec="none", fc=c["badge_bg"])
         ax2.add_patch(badge)
-        ax2.text(8.1, y_top - 0.48, c["verdict"], fontsize=8.2, fontweight='bold', color="#FFFFFF", ha="center", va="center")
-        ax2.text(0.5, y_top - 1.25, c["desc"], fontsize=8.3, color="#334155", va="top", linespacing=1.35)
+        ax2.text(8.1, y_top - 0.46, c["verdict"], fontsize=8.2, fontweight='bold', color="#FFFFFF", ha="center", va="center")
+        ax2.text(0.5, y_top - 1.38, c["desc"], fontsize=8.3, color="#334155", va="top", linespacing=1.35)
 
     out = os.path.join(OUTPUT_DIR, "Fig3_样本效率与骨干迁移性.png")
     plt.tight_layout()
@@ -195,21 +202,21 @@ def generate_fig4():
     # Explicit attribution annotations
     # 1. Bounding effect: ② vs ④ (control: same Q50 gate)
     ax2.annotate("有界收缩控危害 (② vs ④，同门控):\nλ 从 1.0 降为 0.25 -> 危害率由 37.67% 骤降至 3.67%",
-                 xy=(1.0, 38.0), xytext=(0.4, 43.5),
+                 xy=(0.72, 30.0), xytext=(0.38, 45.0), ha='center',
                  arrowprops=dict(arrowstyle="->", color='#DC2626', lw=1.5),
                  fontsize=8.5, fontweight='bold', color='#991B1B',
-                 bbox=dict(boxstyle="round,pad=0.3", fc="#FEF2F2", ec="#FECDD3", lw=1.0))
+                 bbox=dict(boxstyle="round,pad=0.35", fc="#FEF2F2", ec="#FECDD3", lw=1.0))
     
     # 2. Gating effect: ③ vs ④ (control: same λ=0.25 bounding)
-    ax2.annotate("门控机制施选择 (③ vs ④，同收缩):\n收缩同为 λ=0.25，Harm 均为 3.67% -> 门控使覆盖率由 100% 优化为 40.3%",
-                 xy=(3.0, 6.0), xytext=(1.2, 17.0),
+    ax2.annotate("门控机制施选择 (③ vs ④，同收缩):\n收缩均为 λ=0.25，Harm 均为 3.67%\n覆盖率从 100% 降至 40.33%，实现选择性校准",
+                 xy=(2.5, 6.0), xytext=(2.5, 20.0), ha='center',
                  arrowprops=dict(arrowstyle="->", color='#059669', lw=1.5),
                  fontsize=8.5, fontweight='bold', color='#065F46',
-                 bbox=dict(boxstyle="round,pad=0.3", fc="#ECFDF5", ec="#A7F3D0", lw=1.0))
+                 bbox=dict(boxstyle="round,pad=0.35", fc="#ECFDF5", ec="#A7F3D0", lw=1.0))
 
     ax2.set_ylabel("决策危害率 (Harm Rate, %)", fontsize=10.5, fontweight='bold')
     ax2.set_title("机制归因：严格单一变量对照分析\n[收缩作用(② vs ④): 压降危害率；门控作用(③ vs ④): 赋予选择性]", fontsize=11.0, fontweight='bold', pad=12)
-    ax2.set_ylim(0, 50)
+    ax2.set_ylim(0, 52)
     ax2.grid(True, linestyle='--', alpha=0.35, axis='y')
 
     out = os.path.join(OUTPUT_DIR, "Fig4_安全门控消融与危害率压制.png")
@@ -246,15 +253,15 @@ def generate_fig5():
     # Subplot 1: Before
     ax1.set_facecolor('#FFFFFF')
     ax1.set_xlim(0, 1.0)
-    ax1.set_ylim(0, 8.0)
+    ax1.set_ylim(0, 8.8)
     ax1.grid(True, linestyle='--', alpha=0.35, color='#CBD5E1')
 
     ax1.plot(x, src_pdf, color='#94A3B8', linestyle='--', lw=2.0, label=f"源域正常得分分布 (标定中位数 m_s={m_s:.4f})")
     ax1.plot(x, tgt_pdf, color='#EA580C', lw=2.5, label="目标域正常得分分布 (漂移工况)")
     ax1.plot(x, defect_pdf, color='#DC2626', lw=2.2, label="缺陷/异常样本得分分布")
 
-    ax1.vlines(x=tau_s, ymin=0, ymax=5.5, color='#0F172A', lw=2.2, linestyle='-', zorder=4)
-    ax1.text(tau_s, 6.4, f"源域静态阈值 τ_s = {tau_s:.4f}\n(未自适应，无法感知采集工况漂移)", 
+    ax1.vlines(x=tau_s, ymin=0, ymax=6.6, color='#0F172A', lw=2.2, linestyle='-', zorder=4)
+    ax1.text(tau_s, 7.3, f"源域静态阈值 τ_s = {tau_s:.4f}\n(未自适应，无法感知采集工况漂移)", 
              fontsize=9.2, fontweight='bold', color='#0F172A', ha='center', va='center',
              bbox=dict(boxstyle="round,pad=0.4", fc="#F8FAFC", ec="#0F172A", lw=1.2), zorder=5)
 
@@ -274,7 +281,7 @@ def generate_fig5():
     # Subplot 2: After
     ax2.set_facecolor('#FFFFFF')
     ax2.set_xlim(0, 1.0)
-    ax2.set_ylim(0, 8.0)
+    ax2.set_ylim(0, 8.8)
     ax2.grid(True, linestyle='--', alpha=0.35, color='#CBD5E1')
 
     ax2.plot(x, tgt_pdf, color='#059669', lw=2.5, label="目标域正常样本分布")
@@ -285,17 +292,24 @@ def generate_fig5():
     ax2.scatter(tgt_k8, np.full_like(tgt_k8, 0.25), color='#F59E0B', s=70, marker='o', 
                 edgecolor='#78350F', lw=1.4, zorder=6, label=f"目标域正常参考样本 (K=8, 样本中位数 m_t={m_t:.4f})")
 
-    ax2.vlines(x=tau_s, ymin=0, ymax=4.5, color='#94A3B8', lw=1.8, linestyle=':', zorder=4)
-    ax2.text(tau_s, 4.8, f"原静态阈值 τ_s = {tau_s:.4f}", fontsize=8.5, color='#64748B', ha='center', va='bottom')
+    ax2.vlines(x=tau_s, ymin=0, ymax=4.8, color='#94A3B8', lw=1.8, linestyle=':', zorder=4)
+    ax2.text(tau_s - 0.03, 4.8, f"原静态阈值 τ_s = {tau_s:.4f}", fontsize=8.5, color='#475569', ha='right', va='center',
+             bbox=dict(boxstyle="round,pad=0.25", fc="#FFFFFF", ec="#94A3B8", lw=0.9, alpha=0.95), zorder=5)
 
-    ax2.vlines(x=tau_t, ymin=0, ymax=5.5, color='#059669', lw=2.6, linestyle='-', zorder=4)
-    ax2.text(tau_t, 6.5, f"NorOpCal 自适应校准阈值 τ_t = {tau_t:.4f}\n[Δm={delta_m:.4f} ≥ Q50({cutoff_q50:.4f}) -> 触发校准]\n[严格数学生成: τ_t = τ_s + 0.25·Δm]", 
+    ax2.vlines(x=tau_t, ymin=0, ymax=6.6, color='#059669', lw=2.6, linestyle='-', zorder=4)
+    ax2.text(tau_t, 7.3, f"NorOpCal 自适应校准阈值 τ_t = {tau_t:.4f}\n[Δm={delta_m:.4f} ≥ Q50({cutoff_q50:.4f}) -> 触发校准]\n[严格数学生成: τ_t = τ_s + 0.25·Δm]", 
              fontsize=9.2, fontweight='bold', color='#065F46', ha='center', va='center',
              bbox=dict(boxstyle="round,pad=0.4", fc="#D1FAE5", ec="#10B981", lw=1.3), zorder=5)
 
+    # Shift indicator bracket and annotation in clean whitespace to the left
     ax2.annotate("", xy=(tau_t, 3.5), xytext=(tau_s, 3.5),
-                 arrowprops=dict(arrowstyle="->", color='#059669', lw=2.2, mutation_scale=15))
-    ax2.text((tau_s + tau_t)/2, 3.8, f"有界平移量: λ·Δm = {lam * delta_m:.4f}", fontsize=8.8, fontweight='bold', color='#059669', ha='center')
+                 arrowprops=dict(arrowstyle="<->", color='#059669', lw=2.0), zorder=5)
+    ax2.annotate(f"有界平移量: λ·Δm = {lam * delta_m:.4f}\n(阈值适度后移，抑制误报)",
+                 xy=((tau_s + tau_t)/2, 3.5), xytext=(0.18, 3.5),
+                 ha='right', va='center',
+                 arrowprops=dict(arrowstyle="->", color='#059669', lw=1.5),
+                 fontsize=8.5, fontweight='bold', color='#065F46',
+                 bbox=dict(boxstyle="round,pad=0.3", fc="#ECFDF5", ec="#A7F3D0", lw=1.0), zorder=6)
 
     ax2.text(0.18, 1.8, "【工况自适应区】\n感知中位数正向漂移适度后移阈值\n显著抑制目标域良品误判", 
              fontsize=8.8, fontweight='bold', color='#065F46', ha='center', va='center',
