@@ -12,7 +12,7 @@
 
 NorOpCal selectively and conservatively recalibrates the **operating point** (the decision threshold) of a **frozen** industrial anomaly detector under **acquisition shift**, using only a handful of **known-normal target observations** ($K \approx 8$) — without target anomalies, labels, pixel masks, or fine-tuning the detector backbone.
 
-![NorOpCal Framework](assets/figures/Fig1_NorOpCal_Overall_Framework.png)
+![NorOpCal Framework](assets/figures/Fig1_Framework.png)
 
 ---
 

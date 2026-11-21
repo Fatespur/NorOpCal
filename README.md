@@ -15,7 +15,7 @@ NorOpCal 是一种轻量且即插即用的决策校准框架。针对工业无�
 
 整个过程**无需目标域异常样本、无需人工标签、无需像素级掩码，且完全无需微调或重新训练检测器主干网络**。
 
-![NorOpCal 框架总览](assets/figures/Fig1_NorOpCal_Overall_Framework.png)
+![NorOpCal 框架总览](assets/figures/Fig1_Framework.png)
 
 ---
 
