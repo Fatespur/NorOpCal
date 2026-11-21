@@ -1,40 +1,20 @@
-# Known Issues
+# Known Issues & Boundaries
 
-Honest, non-hidden issues affecting this repository.
+Honest, non-hidden engineering and scientific boundaries affecting this release.
 
-## KI-1 — Pre-existing test failure (inherited from the parent research repo)
+## KI-1 — Reproduction Scope: Level 1 & 2 vs. Level 3
 
-- Test: `tests/test_efficientad.py::TestEfficientADConfig::test_default_model_config_loads`
-- Symptom: asserts `teacher.allow_download is False`, but
-  `configs/models/efficientad_default.yaml` sets `allow_download: true`.
-- Status: **PRE_EXISTING_FAILURE** — reproduced identically in the parent
-  research repository against the same config before any G2 change.
-- Policy: intentionally NOT "fixed" by editing the config or the assertion,
-  because both are part of the frozen scientific configuration provenance.
-  Resolving it requires an author decision on which side is canonical.
+- **Level 1 (Core Algorithms & APIs)**: Fully verified via `python -m pytest -v tests/` against self-contained implementations and sealed protocol specifications (`noropcal.load_frozen_spec()`).
+- **Level 2 (Synthetic Demos & Diagnostics)**: Verified via `scripts/demo.py` and `assets/figures/generate_all_figures.py`.
+- **Level 3 (Monolithic Research Experiments)**: Heavyweight components — including proprietary raw industrial datasets (MVTec AD 2), multi-seed detector checkpoint files, and historical internal tools (`tools/pb6`, `tools/pb7`) — are retained in internal research archives and are intentionally **not redistributed** in this public GitHub repository. Level 1/2 passing must not be equated with Level 3 direct reproduction.
 
-## KI-2 — Full end-to-end reproduction not executed during G2
+## KI-2 — Detector-Specific Applicability & Hypotheses
 
-- `scripts/reproduce_main.py --mode execute` is implemented (isolated scratch
-  copy; sealed artifacts never overwritten) but was NOT run during G2:
-  running the full chain takes substantial compute time and G2 forbids
-  re-running large sealed experiments unattended.
-- Level-1 verification (`scripts/verify_frozen_results.py`) IS executed and
-  passes at tolerance 1e-9.
+- **Finding**: Positive threshold calibration headroom (+3.23 pp) was verified on DINOv2 (`dinov2_vits14`) under $K=8$ normal target samples on 10 qualified TEST units.
+- **Controls**: Mechanism controls demonstrated that PatchCore suffered from feature space shift mismatches (`ACTUATOR_MISMATCH`), while EfficientAD showed negligible recalibration headroom (`NO_HEADROOM`).
+- **Policy**: NorOpCal does not claim universal performance gains across arbitrary anomaly detectors. Mechanistic explanations represent scientific hypotheses based on empirical observations, not absolute mathematical proofs.
 
-## KI-3 — Figure byte-parity limits
+## KI-3 — Statistical Safety Budget vs. Individual Guarantees
 
-- Re-rendered quantitative figure PDFs are content-identical to shipped
-  assets only after blanking matplotlib date metadata
-  (`CONTENT_IDENTICAL_AFTER_DATE_NORM`). SVG/PNG bytes differ due to font and
-  encoder metadata. See `scripts/reproduce_figures.py` output.
-- The shipped `Fig1_NorOpCal_Overall_Framework.svg` predates a later revision
-  of `make_fig1.py`; regeneration produces `Fig1_NorOpCal_Framework.*`
-  (DATA_PARITY level).
-
-## KI-4 — AeBAD scripts require a legacy dataset root
-
-- `tools/r03_d0_extract_patchcore.py` targets AeBAD_S (historical route,
-  external validation honestly abstained in the paper). It now requires
-  `NOROPCAL_AEBAD_S_ROOT`; without the dataset these scripts cannot run.
-  This does not affect any paper number.
+- The preregistered safety constraint $\mathbb{E}[\Delta FNR] \le +0.02$ represents an aggregate expected budget across the designated test distribution.
+- It does not constitute a deterministic individual safety guarantee for every isolated sample or every individual acquisition condition.

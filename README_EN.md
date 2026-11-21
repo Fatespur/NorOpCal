@@ -7,8 +7,9 @@
     <a href="README.md">简体中文</a>
 </p>
 
+[![CI](https://github.com/Fatespur/NorOpCal/actions/workflows/ci.yml/badge.svg)](https://github.com/Fatespur/NorOpCal/actions/workflows/ci.yml)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 NorOpCal selectively and conservatively recalibrates the **operating point** (the decision threshold) of a **frozen** industrial anomaly detector under **acquisition shift**, using only a handful of **known-normal target observations** ($K \approx 8$) — without target anomalies, labels, pixel masks, or fine-tuning the detector backbone.
 
@@ -16,9 +17,9 @@ NorOpCal selectively and conservatively recalibrates the **operating point** (th
 
 ---
 
-## Key Problem & Insight
+## Key Problem & Principle
 
-Under acquisition shift (e.g., sensor drift, ambient illumination change), a deployed detector's frozen source threshold $\tau_s$ no longer matches the target imaging distribution: false negatives and false positives can explode.
+Under acquisition shift (e.g., sensor drift, ambient illumination change), a deployed detector's frozen source threshold $\tau_s$ no longer matches the target imaging distribution: false alarms and false negatives can surge.
 
 NorOpCal formulates threshold adaptation as a principled, three-stage pipeline:
 
@@ -27,7 +28,22 @@ NorOpCal formulates threshold adaptation as a principled, three-stage pipeline:
 3. **Conservative Bounded Actuator**: On gate pass, apply bounded shrinkage update:
    $$\tau_t = \tau_s + \lambda \cdot \Delta m \quad (\text{with frozen } \lambda = 0.25)$$
 
-The detector representation, memory bank, and ranking order remain completely frozen. **Abstention is an intentional safety guarantee, not a failure.**
+> **Core Philosophy**: The detector representation, memory bank, and ranking order remain mathematically frozen. **Abstention is an intentional safety guarantee, not an algorithmic failure.**
+
+---
+
+## Reproduction Levels & Asset Scope
+
+To maintain rigorous scientific standards, this repository defines three distinct levels of reproduction:
+
+| Level | Scope | Commands | External Assets Required |
+| :--- | :--- | :--- | :--- |
+| **Level 1: Core Algorithm & API** | Self-contained library `src/noropcal`, sealed protocol specification `load_frozen_spec()`, and full unit tests. | `python -m pytest -v tests/` | **No** (Fully self-contained, tested in CI) |
+| **Level 2: Principle Demo & Synthetic Validation** | Interactive demonstration under synthetic shifts and generation of 4 diagnostic figures (Fig 2–5, alongside the existing Fig 1 architecture diagram). | `python scripts/demo.py`<br>`python assets/figures/generate_all_figures.py` | **No** (Tested in CI) |
+| **Level 3: Full Paper Experiment Reproduction** | All 39 acquisition units across MVTec AD 2, raw image feature extraction, and multi-backbone re-runs. | Legacy execution pipeline | **Yes** (Requires hundreds of GBs of raw MVTec AD 2 images and pre-trained weights) |
+
+> [!IMPORTANT]
+> Passing Level 1 and Level 2 tests in this repository **does not imply that Level 3 full paper experiments are directly reproduced here**. Third-party researchers reproducing Level 3 must obtain the proprietary raw datasets according to official licenses.
 
 ---
 
@@ -36,13 +52,13 @@ The detector representation, memory bank, and ranking order remain completely fr
 ### 1. Installation
 
 ```bash
-git clone https://github.com/fatespur/NorOpCal.git
+git clone https://github.com/Fatespur/NorOpCal.git
 cd NorOpCal
 
 # Create virtual environment (optional)
 python -m venv .venv && source .venv/bin/activate  # Windows: .venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-pip install -e .
+pip install -e ".[dev]"
 ```
 
 ### 2. Python API
@@ -69,68 +85,55 @@ print(f"Adapted threshold: {tau_source:.4f} -> {tau_target:.4f}")
 python scripts/demo.py
 ```
 
-### 4. Run Unit Tests
+### 4. Run Unit Tests (API & Logic Level)
 
 ```bash
-pytest tests/
+python -m pytest -v tests/
 ```
+*Note: The 6 automated unit tests strictly verify core calibration APIs, input validation, quantile gating logic, and bounded translation actuators. They do not cover or represent full baseline detector feature inference (DINOv2, PatchCore, EfficientAD) or paper Level 3 industrial benchmark replication.*
 
 ---
 
-## Benchmark Results
+## Benchmark Results & Scientific Scope
 
-Evaluated across MVTec AD 2 acquisition shift benchmarks with DINOv2, PatchCore, and EfficientAD detectors ($K=8$ normal target observations):
+### 1. Principal Empirical Result
+
+According to the authoritative frozen research evaluation, NorOpCal's performance gain is evaluated specifically on the **DINOv2 backbone**, with **$K=8$ normal target observations**, across **10 qualified TEST units** (`fabric` 5 conditions + `walnuts` 5 conditions), **not as an unconstrained universal gain across all detectors**:
 
 | Policy | $\Delta$ Balanced Accuracy (pp) | $\Delta$ FNR (pp) | Harm Rate (%) | Coverage (%) |
 |---|---|---|---|---|
 | **NoAdapt ($\tau_s$)** | 0.00 (ref; BA 0.5411) | 0.00 | 0.00 | 0.00 |
-| **Bounded-only ($\lambda=0.25$, no gate)** | +3.64 [+3.52, +3.76] | −0.16 | 3.67 | 100.00 |
 | **Gate-only ($\lambda=1.0$, Q50)** | +4.25 [+3.96, +4.55] | +7.49 | 37.67 | 40.33 |
+| **Bounded-only ($\lambda=0.25$, no gate)** | +3.64 [+3.52, +3.76] | −0.16 | 3.67 | 100.00 |
 | **NorOpCal ($\lambda=0.25$, Q50)** | **+3.23 [+2.70, +3.76]** | **+0.24** | **3.67** | **40.33** |
 
-### Key Diagnostic Visualizations
+*Note: Intervals are category-aware Block-Bootstrap (B=10,000) 95% CI. The preregistered safety constraint $\mathbb{E}[\Delta FNR] \le +0.02$ represents an **aggregate expected budget across the designated test distribution**, not an individual deterministic safety guarantee for every isolated sample.*
 
-| Pareto Operational Risk-Gain Frontier | 8-Category Adaptation Polar Radar |
-|:---:|:---:|
-| ![Fig 2 Pareto Risk-Gain Frontier](assets/figures/Fig2_帕累托风险增益前沿.png) | ![Fig 6 Category Polar Radar](assets/figures/Fig6_工业品类全景雷达图.png) |
+### 2. Empirical Observations vs. Hypothesized Mechanisms
 
-| Decision Boundary Shift & Probability Density Landscape (Before vs After) |
-|:---:|
-| ![Fig 5 Decision Landscape](assets/figures/Fig5_决策边界与工况漂移对比.png) |
+Threshold adaptation depends heavily on the geometry and shift structure of feature representations:
 
-| K=8 Sample Convergence & Backbone Scalability | Safety Gate Stepwise Ablation & Harm Rate Suppression |
-|:---:|:---:|
-| ![Fig 3 Sample Efficiency](assets/figures/Fig3_样本效率与骨干迁移性.png) | ![Fig 4 Gate Ablation](assets/figures/Fig4_安全门控消融与危害率压制.png) |
-
----
-
-## Repository Structure
-
-```text
-├── assets/
-│   └── figures/          # High-resolution benchmark diagnostic figures (PNG)
-├── configs/              # Detector and experimental configurations
-├── docs/                 # Detailed methodology & dataset documentation
-│   ├── METHOD.md         # Mathematical definitions and proofs
-│   ├── DATASETS.md       # Dataset protocols and licensing
-│   └── KNOWN_ISSUES.md   # Open problems and engineering considerations
-├── scripts/
-│   └── demo.py           # Quickstart interactive demo
-├── src/
-│   ├── noropcal/         # Core NorOpCal calibration API & implementation
-│   └── shiftad/          # Anomaly detection backbone & shift adaptation utilities
-├── tests/                # Automated unit and behavioral test suite
-├── pyproject.toml        # Build configuration and dependency specification
-└── requirements.txt      # Core runtime dependencies
-```
+- **DINOv2 (`dinov2_vits14`)**:
+  - *Observation*: Evaluated as **USEFUL_SAFE_SELECTABLE** with +3.23 pp net gain.
+  - *Hypothesis*: Deep self-supervised representations exhibit approximate rigid translation under acquisition shift, enabling effective alignment via scalar median shift.
+- **PatchCore (`wide_resnet50_2`)**:
+  - *Observation*: Evaluated as **ACTUATOR_MISMATCH** due to significant performance oscillations.
+  - *Hypothesis*: Nearest-neighbor distances on memory banks are sensitive to anisotropic local distortions, rendering scalar translation ill-suited.
+- **EfficientAD (70k steps)**:
+  - *Observation*: Evaluated as **NO_HEADROOM** with negligible gains.
+  - *Hypothesis*: Student-teacher distillation residuals converge to specific distributional characteristics under target shifts, leaving minimal recalibration headroom.
 
 ---
 
-## Documentation
+## Diagnostic & Conceptual Visualizations
 
-- [Methodology & Principles](docs/METHOD.md)
-- [Dataset Protocols](docs/DATASETS.md)
-- [Third-Party Model Attribution](THIRD_PARTY_NOTICES.md)
+| Policy Ablation Trade-off (Natural Continuous Coordinates) | Mechanism Attribution: Bounding vs. Gating |
+|:---:|:---:|
+| ![Fig 2 Ablation Trade-off](assets/figures/Fig2_帕累托风险增益前沿.png) | ![Fig 4 Mechanism Attribution](assets/figures/Fig4_安全门控消融与危害率压制.png) |
+
+| Asymptotic Standard Error & Mechanism Status Cards | Decision Boundary Calibration [Synthetic Schematic] |
+|:---:|:---:|
+| ![Fig 3 Mechanism Status](assets/figures/Fig3_样本效率与骨干迁移性.png) | ![Fig 5 Synthetic Schematic](assets/figures/Fig5_决策边界与工况漂移对比.png) |
 
 ---
 
@@ -140,13 +143,7 @@ Evaluated across MVTec AD 2 acquisition shift benchmarks with DINOv2, PatchCore,
 @software{noropcal2026,
   author = {Fatespur},
   title = {NorOpCal: Normal-Only Selective Operating-Point Calibration for Industrial Visual Anomaly Detection under Acquisition Shift},
-  url = {https://github.com/fatespur/NorOpCal},
+  url = {https://github.com/Fatespur/NorOpCal},
   year = {2026}
 }
 ```
-
----
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).

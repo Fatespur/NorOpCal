@@ -1,18 +1,14 @@
-# Configs
+# Configuration Specifications
 
-Physical layout preserved from the parent research repository for provenance;
-logical roles are documented here.
+本目录保留了科研开发过程中检测器与实验配置的声明结构，方便审查与扩展。
 
-| Path | Logical role |
-|---|---|
-| `datasets/mvtec_ad.yaml` | MVTec AD / AD 2 dataset adapter config used by the scoring entry points |
-| `models/*.yaml` | **Detector construction configs** (logical `detectors/`): `dino_memory.yaml` (DINOv2 principal), `patchcore_default.yaml`, `efficientad_default.yaml` (frozen 70,000-step protocol) |
-| `experiments/{dino_memory,patchcore,efficientad}_fixture.yaml` | Synthetic-fixture configs consumed by the unit tests (test assets only) |
-| `experiments/phase45/` | Phase-4.5 protocol/base templates asserted by detector tests (historical provenance) |
-| `protocols/noropcal_frozen_protocol.yaml` | Declarative record of the frozen NorOpCal protocol. **NOT an execution input** — authoritative values live in `tools/pb7_p1_safety_actuator/pb7_p1_common.py` and the sealed `reports/pb7_p1_safety_actuator/E_FROZEN_METHOD_SPEC.json` |
-| `examples/` | Minimal example configs for user-provided dataset roots |
+| 配置路径 | 逻辑作用 | 公开状态说明 |
+|---|---|---|
+| `models/*.yaml` | **检测器模型构建参数**：`dino_memory.yaml` (DINOv2 主评测主干)、`patchcore_default.yaml`、`efficientad_default.yaml` | 已开源公开 |
+| `experiments/*_fixture.yaml` | 用于轻量级单元测试的合成夹具配置（如 `dino_memory_fixture.yaml`） | 已开源公开 |
+| `protocols/noropcal_frozen_protocol.yaml` | NorOpCal 冻结科研规范与超参数的**声明式镜像记录** | 已开源公开（权威值可通过 `noropcal.load_frozen_spec()` 载入） |
+| `examples/dataset_roots.example.yaml` | 本地自备数据集路径的环境变量配置示例 | 已开源公开 |
 
-Detector config paths are referenced directly by tests
-(`tests/test_efficientad.py`) and scoring tools
-(`tools/pb6/d2_efficientad_score.py`); do not rename without updating those
-references.
+> [!NOTE]
+> **历史内部路径说明 (Internal Provenance Notice)**  
+> 历史研究中涉及的部分全量数据集适配脚本、全量历史权重以及内部训练模板（如历史上引用的 `tools/pb6/*`、`tools/pb7_*`、`reports/pb7_*` 等）属于内部封闭科研档案，未包含在精简开源发布包中。开源发布包专注于 NorOpCal 校准算法本身及其可直接测试的轻量级资产。
