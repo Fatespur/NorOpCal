@@ -37,14 +37,14 @@ def main() -> None:
     print(f"Calibrated Threshold: {tau_source:.4f} -> {tau_a:.4f} (bounded contraction applied)")
 
     # Case B: Negligible shift (fluctuation within normal range -> abstain to avoid harm)
-    mild_normals = np.random.normal(loc=0.305, scale=0.08, size=8)
+    mild_normals = np.random.normal(loc=0.295, scale=0.08, size=8)
     score_b = policy.correctability_score(source_normals, mild_normals)
     tau_b = policy.threshold(source_normals, mild_normals, tau_source)
     print("\n--- Case B: Negligible Shift (Median Shift < Q50) ---")
     print(f"Target Normal Median (K=8): {np.median(mild_normals):.4f}")
     print(f"Median Shift Signal (Delta_m): {score_b:.4f}")
     print(f"Gate Decision: {'PASS -> Adapt' if policy.gate(score_b) else 'ABSTAIN -> Keep Source Threshold'}")
-    print(f"Calibrated Threshold: {tau_b:.4f} (abstention preserves safety)")
+    print(f"Calibrated Threshold: {tau_b:.4f} (abstention preserves safety: tau_t == tau_s)")
 
     print("\n" + "=" * 60)
     print("Demo completed successfully!")

@@ -8,12 +8,13 @@
     <a href="README.md"><b>简体中文</b></a>
 </p>
 
+[![CI](https://github.com/Fatespur/NorOpCal/actions/workflows/ci.yml/badge.svg)](https://github.com/Fatespur/NorOpCal/actions/workflows/ci.yml)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-NorOpCal 是一种轻量且即插即用的决策校准框架。针对工业无监督异常检测模型在产线**采集域分布偏移**（如成像工况改变、传感器老化、环境光照漂移）下导致的漏检与误报激增问题，NorOpCal **仅需目标域极少量的正常样本**（$K \approx 8$ 张无缺陷图像），即可保守、选择性地自适应重校准模型的**操作点（决策阈值）**。
+NorOpCal 是一种轻量、即插即用的工业异常检测决策阈值校准机制。针对部署后的工业无监督异常检测模型在产线**采集域分布偏移**（如成像工况改变、传感器老化、环境光照漂移）下导致的虚警与漏检激增问题，NorOpCal **仅需目标域极少量的正常样本**（$K \approx 8$ 张无缺陷图像），即可保守、选择性地自适应重校准模型的**操作点（决策阈值）**。
 
-整个过程**无需目标域异常样本、无需人工标签、无需像素级掩码，且完全无需微调或重新训练检测器主干网络**。
+整个过程**无需目标域缺陷样本、无需人工标签、无需像素级掩码，且完全无需微调或重新训练检测器主干网络**。
 
 ![NorOpCal 框架总览](assets/figures/Fig1_系统框架图.png)
 
@@ -29,7 +30,7 @@ NorOpCal 将该问题形式化为**仅基于正常样本的操作点安全校准
    计算源域与目标域正常样本得分分布的中位数位移信号：
    $$\Delta m = \text{median}(S_{\text{target, normal}}) - \text{median}(S_{\text{source, normal}})$$
 2. **可纠正性门控（Correctability Gate, $Q_{50}$）**：  
-   仅当检测到的分布漂移显著大于预注册的稳健阈值时才触发校准（$\Delta m \ge Q_{50}$，其中冻结分位数 $Q_{50} = 0.01589$）；若未达标，则**主动放弃校准（Abstain）**，保持源域阈值 $\tau_s$，彻底防止弱漂移下的盲目校准带来负迁移危害。
+   仅当检测到的分布漂移显著大于预注册的稳健阈值时才触发校准（$\Delta m \ge Q_{50}$，其中冻结分位数 $Q_{50} = 0.01589$）；若未达标，则**主动放弃校准（Abstain）**，保持源域静态阈值 $\tau_s$，彻底防止微弱漂移下的盲目校准带来负迁移危害。
 3. **保守有界执行器（Conservative Bounded Actuator）**：  
    在门控通过后，实施受约束的收缩自适应更新：
    $$\tau_t = \tau_s + \lambda \cdot \Delta m \quad (\text{预注册冻结系数 } \lambda = 0.25)$$
@@ -85,30 +86,49 @@ pytest tests/
 
 ---
 
-## 核心实验结论与基准数据
+## 核心实验结论与适用边界
 
-在标准工业异常检测基准数据集 **MVTec AD 2**（涵盖 8 类工业品、39 种工况偏移）上，基于 DINOv2、PatchCore 和 EfficientAD 主干的综合评测表现如下（$K=8$ 正常样本）：
+### 1. 核心实证结论 (Principal Result)
 
-| 策略方案 (Policy) | $\Delta$ 平衡准确率 (BA, pp) | $\Delta$ 漏检率 (FNR, pp) | 伤害率 (Harm Rate, %) | 覆盖率 (Coverage, %) |
+依据论文正式冻结的研究结果，NorOpCal 的核心性能增益是在 **DINOv2 主干网络**、**$K=8$ 正常样本支持集**、以及 **10 个符合评估资格的 TEST 单元**（`fabric` 5 个工况 + `walnuts` 5 个工况）上测得，**并非跨所有检测器的普遍收益**：
+
+| 策略方案 (Policy) | $\Delta$ 平衡准确率 (BA, pp) | $\Delta$ 漏检率 (FNR, pp) | 危害率 (Harm Rate, %) | 覆盖率 (Coverage, %) |
 |---|---|---|---|---|
 | **不校准 (NoAdapt, $\tau_s$)** | 0.00 (基准; BA 0.5411) | 0.00 | 0.00 | 0.00 |
 | **仅有界收缩 ($\lambda=0.25$, 无门控)** | +3.64 [+3.52, +3.76] | −0.16 | 3.67 | 100.00 |
 | **仅门控机制 ($\lambda=1.0$, Q50)** | +4.25 [+3.96, +4.55] | +7.49 | 37.67 | 40.33 |
 | **NorOpCal 全策略 ($\lambda=0.25$, Q50)** | **+3.23 [+2.70, +3.76]** | **+0.24** | **3.67** | **40.33** |
 
-### 核心诊断与效果可视化
+*注：区间为类别感知 Block-Bootstrap (B=10,000) 95% 置信区间。漏检率增量严格控制在预注册 $+2.0\text{ pp}$ 安全预算内。*
 
-| 帕累托运作风险-安全增益前沿 | 8大工业品类全景鲁棒适应雷达 |
+### 2. 检测器适用性边界 (Detector Scope)
+
+实验表明，阈值自适应校准的有效性高度取决于特征空间的几何结构与漂移规律：
+
+| 检测器 (Detector) | 评测角色 | 判定结论 (Verdict) | 科学解释 |
+|---|---|---|---|
+| **DINOv2** (`dinov2_vits14`) | 核心主干 | **USEFUL_SAFE_SELECTABLE** | 特征分布呈现刚性平移，中位数位移有效表征工况漂移，取得确定性安全增益 (+3.23 pp)。 |
+| **PatchCore** (`wide_resnet50_2`) | 机制对照 | **ACTUATOR_MISMATCH** | 记忆库邻域漂移具有非各向同性，标量平移执行器存在机制失配。 |
+| **EfficientAD** (70,000 steps) | 机制对照 | **NO_HEADROOM** | 基线模型在偏移工况下由于网络结构特性，无可提升余量。 |
+
+### 3. 数据集与样本量资格说明
+
+- **基准数据集**：MVTec AD 2 共包含 8 个品类（`can`, `fabric`, `fruit_jelly`, `rice`, `sheet_metal`, `vial`, `wallplugs`, `walnuts`）合计 39 个工况单元。其中 DEV 集包含 13 个单元，TEST 集包含 26 个单元。
+- **$K=8$ 资格限制**：开展 $K=8$ 校准要求目标域至少包含 8 张独立无缺陷正常图像。在 26 个 TEST 单元中，仅 `fabric`（5 个单元）与 `walnuts`（5 个单元）共 **10 个单元**满足资格；其余 16 个单元存在真实的数据短缺，不满足评估条件。
+
+---
+
+## 机制分析与概念示意
+
+| 策略消融分析 (DINOv2 实测) | 安全门控消融与危害率压制 (实测) |
 |:---:|:---:|
-| ![Fig 2 帕累托风险增益前沿](assets/figures/Fig2_帕累托风险增益前沿.png) | ![Fig 6 工业品类全景雷达图](assets/figures/Fig6_工业品类全景雷达图.png) |
+| ![Fig 2 策略消融权衡](assets/figures/Fig2_帕累托风险增益前沿.png) | ![Fig 4 安全门控消融](assets/figures/Fig4_安全门控消融与危害率压制.png) |
 
-| 决策边界移动与概率密度态势 (Before vs After) |
+| 工况漂移与决策阈值校准原理【概念示意图】 |
 |:---:|
-| ![Fig 5 决策边界与工况漂移对比](assets/figures/Fig5_决策边界与工况漂移对比.png) |
+| ![Fig 5 决策边界概念示意](assets/figures/Fig5_决策边界与工况漂移对比.png) |
 
-| K=8 小样本收敛与多骨干迁移性 | 安全门控机制逐级消融与危害率压制 |
-|:---:|:---:|
-| ![Fig 3 样本效率与骨干迁移性](assets/figures/Fig3_样本效率与骨干迁移性.png) | ![Fig 4 安全门控消融与危害率压制](assets/figures/Fig4_安全门控消融与危害率压制.png) |
+> *说明：Fig 2 与 Fig 4 展示 DINOv2 在 10 个测试单元上的冻结消融实测数据；Fig 5 为基于合成高斯分布的方法原理概念示意图（已剔除任何夸大绝对安全断言）。原包含虚构跨模型数据的图表已被撤下，以维护学术严谨性。*
 
 ---
 
@@ -116,19 +136,21 @@ pytest tests/
 
 ```text
 NorOpCal/
+├── .github/
+│   └── workflows/ci.yml  # 自动化持续集成流水线 (CI)
 ├── assets/
-│   └── figures/          # 高分辨率基准与诊断示意图 (PNG)
-├── configs/              # 检测器与数据集配置文件
-├── docs/                 # 核心理论与数据集协议文档
-│   ├── METHOD.md         # 算法数学推导与边界证明
-│   ├── DATASETS.md       # 数据集协议与规范
+│   └── figures/          # 系统框架图与概念示意图
+├── configs/              # 检测器与协议配置文件
+├── docs/                 # 详细学术与数据协议规范
+│   ├── METHOD.md         # 算法数学推导、门控设计与适用边界
+│   ├── DATASETS.md       # 数据集协议、工况划分与资格审查
 │   └── KNOWN_ISSUES.md   # 科研边界与工程考量
 ├── scripts/
-│   └── demo.py           # 30秒开箱即用演示脚本
+│   └── demo.py           # 30 秒开箱即用演示脚本
 ├── src/
 │   ├── noropcal/         # NorOpCal 核心自包含校准算法与 API 接口
 │   └── shiftad/          # 异常检测器适配与主干支撑模块
-├── tests/                # 自动化测试用例套件 (pytest)
+├── tests/                # 自动化单元测试套件 (pytest)
 ├── pyproject.toml        # 标准 Python 打包与构建配置
 └── requirements.txt      # 依赖清单
 ```
@@ -147,9 +169,3 @@ NorOpCal/
   year = {2026}
 }
 ```
-
----
-
-## 开源协议
-
-本项目采用 [MIT 许可证](LICENSE) 开源。

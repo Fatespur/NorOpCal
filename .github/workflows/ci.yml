@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [main, fix/*]
+  pull_request:
+    branches: [main]
+
+jobs:
+  tests:
+    name: Unit Tests & Core Verification
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies (CPU PyTorch)
+        run: |
+          python -m pip install --upgrade pip
+          pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+          pip install -r requirements.txt
+          pip install -e .
+
+      - name: Verify frozen specification integrity
+        run: |
+          python -c "from noropcal import load_frozen_spec; spec = load_frozen_spec()['principal_candidate']; assert spec['lambda'] == 0.25; assert abs(spec['cutoff_value'] - 0.01589018) < 1e-6; print('Frozen spec verified successfully.')"
+
+      - name: Run core unit tests
+        env:
+          PYTHONPATH: ${{ github.workspace }}/src
+        run: |
+          pytest -v tests/
+
+      - name: Run quickstart demo
+        env:
+          PYTHONPATH: ${{ github.workspace }}/src
+        run: |
+          python scripts/demo.py
+
+      - name: Verify diagnostic figure generation
+        run: |
+          python assets/figures/generate_all_figures.py
